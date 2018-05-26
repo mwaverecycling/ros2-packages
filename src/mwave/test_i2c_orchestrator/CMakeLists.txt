@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(PROJECT_NAME test_i2c)
+set(PROJECT_NAME test_i2c_orchestrator)
 project(${PROJECT_NAME})
 
 # Default to C++14

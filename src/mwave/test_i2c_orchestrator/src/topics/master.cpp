@@ -39,8 +39,10 @@ class Test_I2C_Master : public rclcpp::Node
             // Create a function for when messages are to be sent.
             auto callback = [this](const std_msgs::msg::UInt16::SharedPtr msg) -> void {
                 if(msg->data != _data) {
-                    RCLCPP_WARN(this->get_logger(), "Error: 0x%04x != 0x%04x", msg->data, _data);
+                    RCLCPP_WARN(this->get_logger(), "   Error: 0x%04x != 0x%04x", msg->data, _data);
                     errors++;
+                } else {
+                    RCLCPP_INFO(this->get_logger(), "   Hit!");
                 }
 
                 m_EndTime = std::chrono::system_clock::now();
@@ -64,6 +66,7 @@ class Test_I2C_Master : public rclcpp::Node
             custom_qos_profile.depth = 7;
             _pub = this->create_publisher<std_msgs::msg::UInt16>(out_topic, custom_qos_profile);
 
+            RCLCPP_INFO(this->get_logger(), "Starting Test Cycle...");
             m_StartTime = std::chrono::system_clock::now();
             _pub->publish(_msg);
         }
@@ -101,11 +104,11 @@ int main(int argc, char* argv[])
     // Parse the command line options.
     auto out_topic = std::string("test_i2c_output_relay");
     if (rcutils_cli_option_exist(argv, argv + argc, "-o")) {
-        topic = std::string(rcutils_cli_get_option(argv, argv + argc, "-o"));
+        out_topic = std::string(rcutils_cli_get_option(argv, argv + argc, "-o"));
     }
     auto in_topic = std::string("test_i2c_input_relay");
     if (rcutils_cli_option_exist(argv, argv + argc, "-i")) {
-        topic = std::string(rcutils_cli_get_option(argv, argv + argc, "-i"));
+        in_topic = std::string(rcutils_cli_get_option(argv, argv + argc, "-i"));
     }
 
     // Create a node.
