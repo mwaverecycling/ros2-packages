@@ -30,11 +30,11 @@ endfunction()
 
 
 # custom_executable(subfolder filename)
-custom_executable(topics input)
-target_link_libraries(input i2cdevices)
-custom_executable(topics output)
-target_link_libraries(output i2cdevices)
-#custom_executable(topics master)
+#custom_executable(topics input)
+#target_link_libraries(input i2cdevices)
+#custom_executable(topics output)
+#target_link_libraries(output i2cdevices)
+custom_executable(topics master)
 
 
 ament_package()
