@@ -6,7 +6,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rcutils/cmdline_parser.h"
 
-#include "std_msgs/msg/uint16.hpp"
+#include "std_msgs/msg/u_int16.hpp"
 
 extern "C"
 {
@@ -16,11 +16,11 @@ extern "C"
 
 void print_usage()
 {
-    printf("Usage for test_i2c:output app:\n");
+    printf("Usage for test_i2c output app:\n");
     printf("output [-t topic_name] [-h]\n");
     printf("options:\n");
     printf("-h : Print this help function.\n");
-    printf("-t topic_name : Specify the topic on which to subscribe. Defaults to test_i2c:output:relay\n");
+    printf("-t topic_name : Specify the topic on which to subscribe. Defaults to test_i2c_output_relay\n");
 }
 
 // Create a Listener class that subclasses the generic rclcpp::Node base class.
@@ -28,7 +28,7 @@ void print_usage()
 class Test_I2C_Output : public rclcpp::Node
 {
     public:
-        explicit Test_I2C_Output(const std::string & topic_name) : Node("test_i2c:output")
+        explicit Test_I2C_Output(const std::string & topic_name) : Node("test_i2c_output")
         {
             _adapter = i2c_init(1);
 
@@ -46,6 +46,7 @@ class Test_I2C_Output : public rclcpp::Node
             // Note that not all publishers on the same topic with the same type will be compatible:
             // they must have compatible Quality of Service policies.
             _sub = create_subscription<std_msgs::msg::UInt16>(topic_name, set_i2c);
+            RCLCPP_INFO(this->get_logger(), "Waiting to change I2C...");
         }
 
     private:
@@ -70,7 +71,7 @@ int main(int argc, char * argv[])
     rclcpp::init(argc, argv);
 
     // Parse the command line options.
-    auto topic = std::string("test_i2c:output:relay");
+    auto topic = std::string("test_i2c_output_relay");
     if (rcutils_cli_option_exist(argv, argv + argc, "-t")) {
         topic = std::string(rcutils_cli_get_option(argv, argv + argc, "-t"));
     }

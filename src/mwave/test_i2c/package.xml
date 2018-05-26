@@ -5,6 +5,7 @@
   <version>0.0.1</version>
   <description>Test package for Input and Output modules on I2C</description>
   <license>MIT License</license>
+  <maintainer email="devs@mwaverecycling.com">MWave Recycling</maintainer>
 
 
   <buildtool_depend>ament_cmake</buildtool_depend>

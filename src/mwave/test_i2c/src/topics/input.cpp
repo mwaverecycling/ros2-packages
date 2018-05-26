@@ -7,7 +7,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rcutils/cmdline_parser.h"
 
-#include "std_msgs/msg/uint16.hpp"
+#include "std_msgs/msg/u_int16.hpp"
 
 extern "C"
 {
@@ -19,11 +19,11 @@ using namespace std::chrono_literals;
 
 void print_usage()
 {
-  printf("Usage for test_i2c:input app:\n");
-  printf("output [-t topic_name] [-h]\n");
+  printf("Usage for test_i2c input app:\n");
+  printf("input [-t topic_name] [-h]\n");
   printf("options:\n");
   printf("-h : Print this help function.\n");
-  printf("-t topic_name : Specify the topic on which to publish. Defaults to test_i2c:input:relay\n");
+  printf("-t topic_name : Specify the topic on which to publish. Defaults to test_i2c_input_relay\n");
 }
 
 // Create a Test_I2C_Input class that subclasses the generic rclcpp::Node base class.
@@ -31,7 +31,7 @@ void print_usage()
 class Test_I2C_Input : public rclcpp::Node
 {
     public:
-        explicit Test_I2C_Input(const std::string & topic_name) : Node("test_i2c:input")
+        explicit Test_I2C_Input(const std::string & topic_name) : Node("test_i2c_input")
         {
             _adapter = i2c_init(1);
             _msg = std::make_shared<std_msgs::msg::UInt16>();
@@ -41,7 +41,7 @@ class Test_I2C_Input : public rclcpp::Node
                 pca9555_read_input(_adapter, 0x21, _buffer);
                 _data = (_buffer[0] << 8) | _buffer[1];
                 if(_msg->data != _data) {
-                    RCLCPP_INFO(this->get_logger(), "Value Changed: 0x%04x -> 0x%04x", msg_->data, _data);
+                    RCLCPP_INFO(this->get_logger(), "Value Changed: 0x%04x -> 0x%04x", _msg->data, _data);
                     _msg->data = _data;
                 // Put the message into a queue to be processed by the middleware.
                 // This call is non-blocking.
@@ -56,6 +56,7 @@ class Test_I2C_Input : public rclcpp::Node
 
             // Use a timer to schedule periodic message publishing.
             _timer = this->create_wall_timer(5ms, poll_i2c);
+            RCLCPP_INFO(this->get_logger(), "Listening for I2C changes...");
         }
 
     private:
@@ -85,7 +86,7 @@ int main(int argc, char* argv[])
     rclcpp::init(argc, argv);
 
     // Parse the command line options.
-    auto topic = std::string("test_i2c:input:relay");
+    auto topic = std::string("test_i2c_input_relay");
     if (rcutils_cli_option_exist(argv, argv + argc, "-t")) {
         topic = std::string(rcutils_cli_get_option(argv, argv + argc, "-t"));
     }

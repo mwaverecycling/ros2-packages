@@ -8,7 +8,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rcutils/cmdline_parser.h"
 
-#include "std_msgs/msg/uint16.hpp"
+#include "std_msgs/msg/u_int16.hpp"
 
 #define TRIAL_COUNT 4096
 
@@ -18,12 +18,12 @@ using namespace std::chrono_literals;
 
 void print_usage()
 {
-  printf("Usage for test_i2c:master app:\n");
-  printf("output [-o out-topic] [-i in-topic] [-h]\n");
+  printf("Usage for test_i2c_master app:\n");
+  printf("master [-o out-topic] [-i in-topic] [-h]\n");
   printf("options:\n");
   printf("-h : Print this help function.\n");
-  printf("-o topic_name : Specify the topic on which to publish. Defaults to test_i2c:output:relay\n");
-  printf("-i topic_name : Specify the topic on which to subscribe. Defaults to test_i2c:input:relay\n");
+  printf("-o topic_name : Specify the topic on which to publish. Defaults to test_i2c_output_relay\n");
+  printf("-i topic_name : Specify the topic on which to subscribe. Defaults to test_i2c_input_relay\n");
 }
 
 // Create a Test_I2C_Input class that subclasses the generic rclcpp::Node base class.
@@ -31,7 +31,7 @@ void print_usage()
 class Test_I2C_Master : public rclcpp::Node
 {
     public:
-        explicit Test_I2C_Master(const std::string & out_topic, const std::string & in_topic) : Node("test_i2c:master")
+        explicit Test_I2C_Master(const std::string & out_topic, const std::string & in_topic) : Node("test_i2c_master")
         {
             _msg = std::make_shared<std_msgs::msg::UInt16>();
             _msg->data = 0x0000;
@@ -99,11 +99,11 @@ int main(int argc, char* argv[])
     rclcpp::init(argc, argv);
 
     // Parse the command line options.
-    auto out_topic = std::string("test_i2c:output:relay");
+    auto out_topic = std::string("test_i2c_output_relay");
     if (rcutils_cli_option_exist(argv, argv + argc, "-o")) {
         topic = std::string(rcutils_cli_get_option(argv, argv + argc, "-o"));
     }
-    auto in_topic = std::string("test_i2c:input:relay");
+    auto in_topic = std::string("test_i2c_input_relay");
     if (rcutils_cli_option_exist(argv, argv + argc, "-i")) {
         topic = std::string(rcutils_cli_get_option(argv, argv + argc, "-i"));
     }
