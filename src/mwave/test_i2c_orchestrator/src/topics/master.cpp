@@ -45,8 +45,10 @@ class Test_I2C_Master : public rclcpp::Node
                     RCLCPP_INFO(this->get_logger(), "   Hit!");
                 }
 
-                m_EndTime = std::chrono::system_clock::now();
-                elapsed += std::chrono::duration_cast<std::chrono::milliseconds>(m_EndTime - m_StartTime).count();
+                if(count > 0) {
+                    m_EndTime = std::chrono::system_clock::now();
+                    elapsed += std::chrono::duration_cast<std::chrono::milliseconds>(m_EndTime - m_StartTime).count();
+                }
 
                 count++;
                 if(count < TRIAL_COUNT) {
@@ -61,13 +63,10 @@ class Test_I2C_Master : public rclcpp::Node
 
             _sub = create_subscription<std_msgs::msg::UInt16>(in_topic, callback);
 
-            // Create a publisher with a custom Quality of Service profile.
-            rmw_qos_profile_t custom_qos_profile = rmw_qos_profile_default;
-            custom_qos_profile.depth = 7;
-            _pub = this->create_publisher<std_msgs::msg::UInt16>(out_topic, custom_qos_profile);
+            _pub = this->create_publisher<std_msgs::msg::UInt16>(out_topic);
 
             RCLCPP_INFO(this->get_logger(), "Starting Test Cycle...");
-            m_StartTime = std::chrono::system_clock::now();
+            //m_StartTime = std::chrono::system_clock::now();
             _pub->publish(_msg);
         }
 
