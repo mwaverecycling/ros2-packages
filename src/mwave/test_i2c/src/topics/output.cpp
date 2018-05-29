@@ -38,7 +38,10 @@ class Test_I2C_Output : public rclcpp::Node
                 RCLCPP_INFO(this->get_logger(), "Writing 0x%04x to 0x20", msg->data);
                 _buffer[0] = (msg->data >> 8) & 0xff;
                 _buffer[1] = msg->data & 0xff;
-                pca9555_write_output(_adapter, 0x20, _buffer);
+                int status = pca9555_write_output(_adapter, 0x20, _buffer);
+                if(status < 2) {
+                    RCLCPP_WARN(this->get_logger(), "   Write Failed! [%d]", status);
+                }
             };
 
             // Create a subscription to the topic which can be matched with one or more compatible ROS

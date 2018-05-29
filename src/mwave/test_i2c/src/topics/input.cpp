@@ -38,7 +38,10 @@ class Test_I2C_Input : public rclcpp::Node
 
             // Create a function for when messages are to be sent.
             auto poll_i2c = [this]() -> void {
-                pca9555_read_input(_adapter, 0x21, _buffer);
+                int status = pca9555_read_input(_adapter, 0x21, _buffer);
+                if(status < 2) {
+                    RCLCPP_WARN(this->get_logger(), "   Read Failed! [%d]", status);
+                }
                 _data = (_buffer[0] << 8) | _buffer[1];
                 if(_msg->data != _data) {
                     RCLCPP_INFO(this->get_logger(), "Value Changed: 0x%04x -> 0x%04x", _msg->data, _data);
