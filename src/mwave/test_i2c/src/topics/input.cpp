@@ -56,7 +56,7 @@ class Test_I2C_Input : public rclcpp::Node
             _pub = this->create_publisher<std_msgs::msg::UInt16>(topic_name, rmw_qos_profile_default);
 
             // Use a timer to schedule periodic message publishing.
-            _timer = this->create_wall_timer(std::chrono::duration<long long int, Ratio<1, 1000000>>(sample_rate), poll_i2c);
+            _timer = this->create_wall_timer(std::chrono::duration<long long int, std::ratio<1, 1000000>>(sample_rate), poll_i2c);
             RCLCPP_INFO(this->get_logger(), "Listening for I2C changes...");
         }
 
