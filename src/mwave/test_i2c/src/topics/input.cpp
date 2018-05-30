@@ -32,7 +32,7 @@ void print_usage()
 class Test_I2C_Input : public rclcpp::Node
 {
     public:
-        explicit Test_I2C_Input(const std::string & topic_name, std::chrono::duration sample_rate) : Node("test_i2c_input")
+        explicit Test_I2C_Input(const std::string & topic_name, long long int sample_rate) : Node("test_i2c_input")
         {
             _adapter = i2c_init(1);
             _msg = std::make_shared<std_msgs::msg::UInt16>();
@@ -56,7 +56,7 @@ class Test_I2C_Input : public rclcpp::Node
             _pub = this->create_publisher<std_msgs::msg::UInt16>(topic_name, rmw_qos_profile_default);
 
             // Use a timer to schedule periodic message publishing.
-            _timer = this->create_wall_timer(sample_rate, poll_i2c);
+            _timer = this->create_wall_timer(std::chrono::duration<long long int, Ratio<1, 1000000>>(sample_rate), poll_i2c);
             RCLCPP_INFO(this->get_logger(), "Listening for I2C changes...");
         }
 
@@ -95,8 +95,8 @@ int main(int argc, char* argv[])
     if (rcutils_cli_option_exist(argv, argv + argc, "-s")) {
         sample_freq = std::stoi(rcutils_cli_get_option(argv, argv + argc, "-s"));
     }
-    double sample_rate_f = 1f / sample_freq;
-    std::chrono::duration<double> sample_rate(sample_rate_f);
+    double sample_rate_d = (double)1 / sample_freq;
+    long long int sample_rate = sample_rate_d * 1000000;
 
     // Create a node.
     auto node = std::make_shared<Test_I2C_Input>(topic, sample_rate);
