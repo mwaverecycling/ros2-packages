@@ -81,10 +81,8 @@ parse_init()
 			read -p "   Description: " package_desc
 			read -p "   License [Apache License 2.0]: " package_license
 			package_license=${package_license:-"Apache License 2.0"}
-			read -p "   Maintainer [none]: " package_maintainer
-			if [ -n $package_maintainer ]; then
-				read -p "   Maintainer Email [none]: " package_maintainer_email
-			fi
+			read -p "   Maintainer: " package_maintainer
+			read -p "   Maintainer Email: " package_maintainer_email
 
 			case "$3" in
 				"python" )

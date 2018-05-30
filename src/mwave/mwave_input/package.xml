@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>mwave_input</name>
+  <version>0.0.1</version>
+  <description>Generic package for publishing configured hardware input onto the ROS2 Network</description>
+  <maintainer email="devs@mwaverecycling.com">MWave Recycling</maintainer>
+  <license>MIT License</license>
+
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <build_depend>rclcpp</build_depend>
+  <build_depend>rcutils</build_depend>
+
+  <exec_depend>rclcpp</exec_depend>
+  <exec_depend>rcutils</exec_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
