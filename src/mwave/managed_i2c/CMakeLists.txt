@@ -14,23 +14,35 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(rcutils)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(lifecycle_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
-function(custom_executable subfolder target)
-  add_executable(${target} src/${subfolder}/${target}.cpp)
-  ament_target_dependencies(${target}
-    "rclcpp"
-    "rcutils"
-    "std_msgs")
-  install(TARGETS ${target}
-  DESTINATION lib/${PROJECT_NAME})
-endfunction()
+include_directories(
+  include
+  ${std_msgs_INCLUDE_DIRS}
+  ${lifecycle_msgs_INCLUDE_DIRS}
+  ${rclcpp_lifecycle_INCLUDE_DIRS}
+  ${rclcpp_INCLUDE_DIRS}
+)
 
+add_executable(input
+  src/lifecycle/input.cpp)
+target_link_libraries(input
+  ${rclcpp_lifecycle_LIBRARIES}
+  ${std_msgs_LIBRARIES}
+  i2cdevices
+)
 
-# custom_executable(subfolder filename)
-custom_executable(lifecycle input)
-#custom_executable(topics master)
+install(TARGETS
+  input
+  DESTINATION lib/${PROJECT_NAME}
+)
 
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
 ament_package()

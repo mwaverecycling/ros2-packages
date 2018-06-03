@@ -6,7 +6,7 @@
 
 #include "lifecycle_msgs/msg/transition_event.hpp"
 
-#include "rclcpp/rclpp.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "rclcpp/publisher.hpp"
 
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
@@ -14,7 +14,13 @@
 
 #include "rcutils/logging_macros.h"
 
-#include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/u_int16.hpp"
+
+extern "C"
+{
+    #include "i2cfunc.h"
+    #include "devices/pca9555.h"
+}
 
 using namespace std::chrono_literals;
 
@@ -38,7 +44,7 @@ class Lifecycle_I2C_Input : public rclcpp_lifecycle::LifecycleNode
 {
 public:
     explicit Lifecycle_I2C_Input(const std::string & node_name, bool intra_proccess_comms = false)
-    : rclcpp_lifecycle::LifecycleNode(node_name, "", intra_process_comms)
+    : rclcpp_lifecycle::LifecycleNode(node_name, "", intra_proccess_comms)
     {}
     // Callback for walltimer to publish I2C values
     /**
@@ -47,15 +53,18 @@ public:
      * we still invoke publish, but the communication is blocked so that
      * no messages is actually transferred.
      */    
+    void
     publish()
     {
         // TODO: Make data be useful read from i2c
         // msg_->data = 0;
         
         if (pub_->is_activated()) {
-            RCLCPP_INFO(get_logger(), "Lifecycle publisher is active and publishing.");
+            RCUTILS_LOG_INFO_NAMED(get_name(), "Lifecycle publisher is active and publishing.");
+            //RCLCPP_INFO(get_logger(), "Lifecycle publisher is active and publishing.");
         } else {
-            RCLCPP_INFO(get_logger(), "Lifecycle publisher is currently inactive.");
+            RCUTILS_LOG_INFO_NAMED(get_name(), "Lifecycle publisher is currently inactive.");
+            //RCLCPP_INFO(get_logger(), "Lifecycle publisher is currently inactive.");
         }
 
         pub_->publish(msg_);
@@ -85,10 +94,11 @@ public:
         msg_ = std::make_shared<std_msgs::msg::UInt16>();
         pub_ = this->create_publisher<std_msgs::msg::UInt16>("managed_i2c_input");
         //TODO: Dynamically set polling timer frequency
-        timer_ = this->create_wall_timer(1s, std::bind(&LifecycleTalker::publish, this));
+        timer_ = this->create_wall_timer(1s, std::bind(&Lifecycle_I2C_Input::publish, this));
 
-        RCLCPP_INFO(get_logger(), "on_configure() is called.");
-
+        //RCLCPP_INFO(get_logger(), "on_configure() is called.");
+        RCUTILS_LOG_INFO_NAMED(get_name(), "on_configure() is called.");
+          
         // We return a success and hence invoke the transition to the next
         // step: "inactive".
         // If we returned TRANSITION_CALLBACK_FAILURE instead, the state machine
@@ -128,7 +138,7 @@ public:
         // would stay in the "inactive" state.
         // In case of TRANSITION_CALLBACK_ERROR or any thrown exception within
         // this callback, the state machine transitions to state "errorprocessing".
-        return lifecycle_msgs:msg:Transition::TRANSITION_CALLBACK_SUCCESS;
+        return lifecycle_msgs::msg::Transition::TRANSITION_CALLBACK_SUCCESS;
     }
 
     // Transition callback for state deactivating
@@ -142,7 +152,7 @@ public:
      * TRANSITION_CALLBACK_FAILURE transitions to "active"
      * TRANSITION_CALLBACK_ERROR or any uncaught exceptions to "errorprocessing"
      */
-    rcl_lifecycle_transitions_key_t
+    rcl_lifecycle_transition_key_t
     on_deactivate(const rclcpp_lifecycle::State &)
     {
         // We explicitly deactivate the lifecycle publisher.
@@ -193,20 +203,20 @@ public:
     }
     
 private:
-    std::shared_prt<std_msgs::msg::String> msg_;
+    std::shared_ptr<std_msgs::msg::UInt16> msg_;
 
     // We hold an instance of a lifecycle publisher. This lifecycle publisher
     // can be activated or deactivated regarding on which state the lifecycle node
     // is in.
     // By default, a lifecycle publisher is inactive by creation and has to be
     // activated to publsh messages in the ROS world.
-    std::shared_prt<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::String>> pub_;
+    std::shared_ptr<rclcpp_lifecycle::LifecyclePublisher<std_msgs::msg::UInt16>> pub_;
 
     // We hold instance of a timer which periodically triggers the publish function.
     // As for the beta version, this is a regular timer. IN a future version, a
     // lifecycle timer will be created which obeys the same lifecycle management as the
     // lifecycle publisher.
-    std::shared_prt<rclcpp::TimerBase> timer_;
+    std::shared_ptr<rclcpp::TimerBase> timer_;
 };
 
 /**
@@ -219,14 +229,14 @@ int main(int argc, char * argv[])
     // Force flush of the stdout buffer.
     // This ensures a correct sync of all prints
     // even when executed simultaneously within the launch file.
-    setvbuff(stdout, NULL, _IONBF, BUFSIZ);
+    setvbuf(stdout, NULL, _IONBF, BUFSIZ);
 
     rclcpp::init(argc, argv);
 
     rclcpp::executors::SingleThreadedExecutor exe;
 
-    std::shared_prt<Lifecycle_I2C_Input> lc_node =
-        std::make_shared<Lifecycle_I2C_Input>("lc_input");
+    std::shared_ptr<Lifecycle_I2C_Input> lc_node =
+        std::make_shared<Lifecycle_I2C_Input>("lc_input", false);
 
     exe.add_node(lc_node->get_node_base_interface());
 
