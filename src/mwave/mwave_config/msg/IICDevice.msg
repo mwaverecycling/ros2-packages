@@ -1,2 +1,6 @@
+bus byte
 byte address
-string<=16 device
+string<=32 device
+string[] option_keys
+string[] option_values
+string<=32[] topics
