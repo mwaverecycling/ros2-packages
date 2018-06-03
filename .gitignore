@@ -38,3 +38,6 @@ qtcreator-*
 # Catkin custom files
 AMENT_IGNORE
 .DS_Store
+
+# Vim
+*.swp
