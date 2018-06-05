@@ -1,0 +1,4 @@
+string node_name
+---
+string err_string
+string<=3 node_type

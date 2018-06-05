@@ -13,20 +13,16 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rcutils)
+find_package(builtin_interfaces REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
-function(custom_executable subfolder target)
-  add_executable(${target} src/${subfolder}/${target}.cpp)
-  ament_target_dependencies(${target}
-    "rclcpp"
-    "rcutils")
-  install(TARGETS ${target}
-  DESTINATION lib/${PROJECT_NAME})
-endfunction()
-
-
-# custom_executable(subfolder filename)
-
+rosidl_generate_interfaces(mwave_config
+    "msg/I2CDevice.msg"
+    "srv/ConfigType.srv"
+    "srv/ConfigHMI.srv"
+    "srv/ConfigLOG.srv"
+    "srv/ConfigION.srv"
+    DEPENDENCIES builtin_interfaces
+)
 
 ament_package()

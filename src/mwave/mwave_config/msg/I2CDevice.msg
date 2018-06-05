@@ -1,4 +1,4 @@
-bus byte
+byte bus
 byte address
 string<=32 device
 string[] option_keys
