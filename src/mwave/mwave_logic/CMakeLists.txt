@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(PROJECT_NAME mwave_messages)
+set(PROJECT_NAME mwave_logic)
 project(${PROJECT_NAME})
 
 # Default to C++14
