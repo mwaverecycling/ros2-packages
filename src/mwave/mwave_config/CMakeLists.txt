@@ -18,7 +18,7 @@ find_package(rosidl_default_generators REQUIRED)
 
 rosidl_generate_interfaces(mwave_config
     "msg/I2CDevice.msg"
-    "srv/ConfigType.srv"
+    "srv/FetchType.srv"
     "srv/ConfigHMI.srv"
     "srv/ConfigLOG.srv"
     "srv/ConfigION.srv"
