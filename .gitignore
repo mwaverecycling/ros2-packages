@@ -39,5 +39,9 @@ qtcreator-*
 AMENT_IGNORE
 .DS_Store
 
+# Configuration Settings and Passwords
+**/private/*.json
+#src/mwave/mwave_orchestrator/private/*.json
+
 # Vim
 *.swp
