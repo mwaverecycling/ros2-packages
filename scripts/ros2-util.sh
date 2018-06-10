@@ -4,9 +4,9 @@ usage()
 {
 	echo "Usage: $program_name <init|help> [params...]"
 	echo "   help - Display this help text"
-	echo "   init <command>"
-	echo "      - Initialize a project or component of a project"
-	echo "   create <command>"
+	echo "   init"
+	echo "      - Initialize an Ament build tree"
+	echo "   create <component>"
 	echo "      - Create a component of a project"
 }
 
@@ -16,34 +16,98 @@ script_dir="$( dirname "${BASH_SOURCE[0]}" )"
 
 create_usage()
 {
-	echo "Usage: $program_name create <package> <name> [template]"
-	echo "   help - Display this help text"
-	echo "   <package> - Path of package in the ./src directory"
-	echo "   <name> - Name of file to create"
-	echo "   [template] - Optionally copy a template from $script_dir/templates"
+	echo ""
+	echo "Usage: $program_name create <component> [args...]"
+	echo "   help"
+	echo "      - Display this help text"
+	echo "   package <path> <python|cpp>"
+	echo "      - Initialize a Python or C++ package at the specified path"
+	echo "      <path> - Path to the package in the ./src directory (not including src)"
+	echo "   file   <package-path> <name> [template]"
+	echo "   header <package-path> <name> [template]"
+	echo "      - Create a code file with an optional template"
+	echo "      <package-path> - Path to the package in the ./src directory (not including src)"
+	echo "      <name> - Name of file to create in the package's source directory"
+	echo "      [template] - Template from $script_dir/templates to copy"
+	echo ""
 }
+
 parse_create()
 {
-	if [ -z $1 ] || [ -z $2 ]; then
-		echo "Create needs a package and a name!"
+	if [ -z $2 ]; then
+		echo "Create requires a package path!"
 		create_usage
 		exit 1
 	fi
+	package_dir="src/$2"
 
-	package_dir="./src/$1"
-	if [ -e "$package_dir/setup.py" ]; then
-		# Package is Python
-		package_name=$(basename $package_dir)
-		src_dir="$package_dir/$package_name"
-	else
-		# Package is C++
-		src_dir="$package_dir/src"
-	fi
+	case "$1" in
+		"package" )
+			if [ -z $3 ]; then
+				echo "You must specify language!"
+				create_usage
+				exit 1
+			fi
 
-	comp_file="$src_dir/$2"
-	mkdir -p $( dirname $comp_file )
+			mkdir -p "$package_dir"
 
-	[ -n $3 ] && cp "$script_dir/templates/$3" "$comp_file" || touch $comp_file
+			read -p "   Description: " package_desc
+			read -p "   License [Apache License 2.0]: " package_license
+			package_license=${package_license:-"Apache License 2.0"}
+			read -p "   Maintainer: " package_maintainer
+			read -p "   Maintainer Email: " package_maintainer_email
+
+			case "$3" in
+				"python" )
+					init_python "$package_dir" "$package_desc" "$package_license" "$package_maintainer" "$package_maintainer_email"
+					;;
+				"cpp" )
+					init_cpp "$package_dir" "$package_desc" "$package_license" "$package_maintainer" "$package_maintainer_email"
+					;;
+				* )
+					create_usage
+					;;
+			esac
+			;;
+		"file" )
+			if [ -z $3 ]; then
+				echo "Create needs a file name!"
+				create_usage
+				exit 1
+			fi
+
+			if [ -e "$package_dir/setup.py" ]; then
+				# Package is Python
+				package_name=$(basename $package_dir)
+				src_dir="$package_dir/$package_name"
+			else
+				# Package is C++
+				src_dir="$package_dir/src"
+			fi
+			
+			comp_file="$src_dir/$3"
+			mkdir -p $( dirname $comp_file )
+
+			[ -n $4 ] && cp "$script_dir/templates/$4" "$comp_file" || touch $comp_file
+			;;
+		"header" )
+			if [ -z $3 ]; then
+				echo "Create needs a file name!"
+				create_usage
+				exit 1
+			fi
+
+			inc_dir="$package_dir/include"
+			
+			comp_file="$inc_dir/$3"
+			mkdir -p $( dirname $comp_file )
+
+			[ -n $4 ] && cp "$script_dir/templates/$4" "$comp_file" || touch $comp_file
+			;;
+		* )
+			create_usage
+			;;
+	esac
 }
 
 
@@ -54,8 +118,6 @@ init_usage()
 	echo "   help - Display this help text"
 	echo "   project [company]"
 	echo "      - Initialize the project structure, optionally adding a company folder in ./src/"
-	echo "   package <path> <python|cpp>"
-	echo "      - Initialize a Python or C++ package at the specified path"
 }
 parse_init()
 {

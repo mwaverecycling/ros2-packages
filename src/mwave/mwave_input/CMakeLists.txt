@@ -32,7 +32,6 @@ add_executable(input
 target_link_libraries(input
   ${rclcpp_lifecycle_LIBRARIES}
   ${std_msgs_LIBRARIES}
-  i2cdevices
 )
 
 install(TARGETS
