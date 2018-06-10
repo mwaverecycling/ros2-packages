@@ -56,7 +56,6 @@ class OrchestratorConfigNode : public rclcpp::Node
                 RCLCPP_INFO(this->get_logger(), "Request of type for node: %s", request->node.c_str());
                 response->error = response->type = "";
 
-                //std::string query = "SELECT * FROM nodes WHERE slug = '" + request->node + "';";
                 query_nodes->set_string(0, request->node);
                 auto sql_result = query_nodes->query();
 
@@ -76,8 +75,6 @@ class OrchestratorConfigNode : public rclcpp::Node
                 (void)request_header;
                 RCLCPP_INFO(this->get_logger(), "Request of input/output for node: %s", request->node.c_str());
 
-                //std::string query = "SELECT * FROM i2c_config WHERE node = '" + request->node +"';";
-                //std::shared_ptr<mariadb::result_set> sql_result = sql_connection->query(query);
                 query_config_i2c->set_string(0, request->node);
                 auto sql_result = query_config_i2c->query();
                 
@@ -152,7 +149,7 @@ class OrchestratorConfigNode : public rclcpp::Node
             rclcpp::Service<mwave_config::srv::ConfigHMI>::SharedPtr srv_config_hmi;
             rclcpp::Service<mwave_config::srv::ConfigLOG>::SharedPtr srv_config_log;
 
-            //TODO: Create configuration file for database connection info.
+            //TODO: Load in configs from mwave_orchestrator/private/Orchestrator.db.json
             std::shared_ptr<mariadb::account> sql_account = mariadb::account::create("127.0.0.1", "ros2", "oCXxFFUmBbVbV3gTM35DaTYveA4Ahh2P", "ros2config");
             std::shared_ptr<mariadb::connection> sql_connection = mariadb::connection::create(sql_account);
 
