@@ -41,7 +41,6 @@ AMENT_IGNORE
 
 # Configuration Settings and Passwords
 **/private/*.json
-#src/mwave/mwave_orchestrator/private/*.json
 
 # Vim
 *.swp
