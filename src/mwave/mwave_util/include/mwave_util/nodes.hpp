@@ -60,7 +60,10 @@ namespace mwave_util
         public:
             using SharedPtr = std::shared_ptr<HandledLifecycleNode>;
             
-            explicit HandledLifecycleNode(const std::string & node_name);
+            explicit HandledLifecycleNode(
+                const std::string & node_name,
+                const std::string & namespace_ = "",
+                bool use_intra_process_comms = false);
             virtual void start();
 
             template<typename MessageT, typename Alloc = std::allocator<void>>

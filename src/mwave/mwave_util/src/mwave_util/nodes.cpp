@@ -52,7 +52,10 @@ namespace mwave_util
 
 
 
-    HandledLifecycleNode::HandledLifecycleNode(const std::string & node_name) : LifecycleNode(node_name) {  }
+    HandledLifecycleNode::HandledLifecycleNode(
+        const std::string & node_name,
+        const std::string & namespace_,
+        bool use_intra_process_comms) : LifecycleNode(node_name, namespace_, use_intra_process_comms) {  }
     void HandledLifecycleNode::start()
     {
         RCLCPP_INFO(this->get_logger(), "Started node '%s'", this->get_name());

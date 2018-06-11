@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(PROJECT_NAME mwave_input)
-project(${PROJECT_NAME})
+project(mwave_input)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -14,30 +13,31 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rcutils)
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(mwave_util REQUIRED)
+find_package(rcutils)
 find_package(lifecycle_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(i2cbridge REQUIRED)
 
-include_directories(
-  include
-  ${std_msgs_INCLUDE_DIRS}
-  ${lifecycle_msgs_INCLUDE_DIRS}
-  ${rclcpp_lifecycle_INCLUDE_DIRS}
-  ${rclcpp_INCLUDE_DIRS}
-)
+function(custom_executable subfolder target)
+  add_executable(${target} src/${subfolder}/${target}.cpp)
+  ament_target_dependencies(${target}
+    "rclcpp"
+    "rclcpp_lifecycle"
+    "mwave_util"
+    "rcutils"
+    "std_msgs"
+    "i2cbridge")
+  install(TARGETS ${target}
+  DESTINATION lib/${PROJECT_NAME})
+endfunction()
 
-add_executable(input
-  src/lifecycle/input.cpp)
-target_link_libraries(input
-  ${rclcpp_lifecycle_LIBRARIES}
-  ${std_msgs_LIBRARIES}
-)
 
-install(TARGETS
-  input
-  DESTINATION lib/${PROJECT_NAME}
-)
+custom_executable(lifecycle input)
+
+
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
