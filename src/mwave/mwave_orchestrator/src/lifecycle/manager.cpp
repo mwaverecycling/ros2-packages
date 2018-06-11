@@ -20,7 +20,8 @@ class LifecycleServiceClient : public rclcpp::Node
             }
 
     private:
-        
+            std::shared_ptr<mariadb::account> sql_account = mariadb::account::create("127.0.0.1", "ros2", "oCXxFFUmBbVbV3gTM35DaTYveA4Ahh2P", "ros2config");
+            std::shared_ptr<mariadb::connection> sql_connection = mariadb::connection::create(sql_account);
 }
 
 // Main
