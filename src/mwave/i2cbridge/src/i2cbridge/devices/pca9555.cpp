@@ -10,17 +10,19 @@
 
 namespace I2CROSBridge
 {
-	void ConfigurePCA9555OutputPin(uint_fast8_t pin, const std::string & topic, i2cpp::PCA9555::SharedPtr device, mwave_util::HandledNode::SharedPtr node)
+    template<class HandledNodeT>
+	void ConfigurePCA9555OutputPin(uint_fast8_t pin, const std::string & topic, i2cpp::PCA9555::SharedPtr device, std::shared_ptr<HandledNodeT> node)
 	{
-        node->add_subscription<std_msgs::msg::Bool>(topic,
+        node->template add_subscription<std_msgs::msg::Bool>(topic,
             [device, node, pin](const std_msgs::msg::Bool::SharedPtr msg) -> void
         {
             bool value = msg->data;
-            RCLCPP_INFO(node->get_logger(), "Writing %s to pin 0x%02x at 0x%02x", value ? "true" : "false", pin, device->get_address());
+            RCLCPP_INFO(node->template get_logger(), "Writing %s to pin 0x%02x at 0x%02x", value ? "true" : "false", pin, device->get_address());
             device->write_output_pin(pin, value);
         });
 	}
-    void ConfigurePCA9555InputCallback(uint_fast16_t mask, std::string topics[16], i2cpp::PCA9555::SharedPtr device, mwave_util::HandledNode::SharedPtr node)
+    template<class HandledNodeT>
+    void ConfigurePCA9555InputCallback(uint_fast16_t mask, std::string topics[16], i2cpp::PCA9555::SharedPtr device, std::shared_ptr<HandledNodeT> node)
     {
         uint_fast16_t prev = device->get_state();
         uint_fast16_t result = device->read_input();
@@ -32,7 +34,7 @@ namespace I2CROSBridge
                 if((prev & (1 << i)) != (result & (1 << i))) {
                     auto msg = std::make_shared<std_msgs::msg::Bool>();
                     msg->data = (result & (1 << i)) > 0;
-                    node->get_publisher<std_msgs::msg::Bool>(topics[i])->publish(msg);
+                    node->template get_publisher<std_msgs::msg::Bool>(topics[i])->publish(msg);
                 }
             }
         }
@@ -40,7 +42,8 @@ namespace I2CROSBridge
     };
 
 
-	std::shared_ptr<i2cpp::PCA9555> ConfigurePCA9555(const mwave_config::msg::I2CDevice& config, mwave_util::HandledNode::SharedPtr node)
+    template<class HandledNodeT>
+	std::shared_ptr<i2cpp::PCA9555> ConfigurePCA9555(const mwave_config::msg::I2CDevice& config, std::shared_ptr<HandledNodeT> node)
 	{
 		std::map<std::string, std::string> options = getOptions(config);
         uint_fast16_t mask = options.find("mode") != options.end()
@@ -58,7 +61,7 @@ namespace I2CROSBridge
             //else { ConfigurePCA9555InputPin(i, config.topics[i], device_ref, node); }
             else {
                 input_topics[i] = config.topics[i];
-                node->add_publisher<std_msgs::msg::Bool>(config.topics[i]);
+                node->template add_publisher<std_msgs::msg::Bool>(config.topics[i]);
             }
         }
 
@@ -73,7 +76,7 @@ namespace I2CROSBridge
                     if((prev & (1 << index)) != (result & (1 << index))) {
                         auto msg = std::make_shared<std_msgs::msg::Bool>();
                         msg->data = (result & (1 << index)) > 0;
-                        node->get_publisher<std_msgs::msg::Bool>(input_topics[index])->publish(msg);
+                        node->template get_publisher<std_msgs::msg::Bool>(input_topics[index])->publish(msg);
                     }
                 }
             }
@@ -84,7 +87,7 @@ namespace I2CROSBridge
         // Default Sample Rate is 10 Hz
         uint_fast16_t sample_freq = config.frequency == 0 ? 10 : config.frequency;
         int_fast64_t sample_rate = int_fast64_t((double(1) / sample_freq) * 1000);
-        node->add_wall_timer(std::chrono::duration<int_fast64_t, std::ratio<1, 1000000>>(sample_rate), callback);
+        node->template add_wall_timer(std::chrono::duration<int_fast64_t, std::ratio<1, 1000000>>(sample_rate), callback);
 
 		return device_ref;
 	}
