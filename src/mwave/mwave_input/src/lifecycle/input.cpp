@@ -37,12 +37,13 @@ using namespace std::chrono_literals;
  * created:
  * - <node_name>__transition_event
  */
-class Lifecycle_I2C_Input : public mwave_util::HandledLifecycleNode
+class Lifecycle_I2C_Input : public mwave_util::HandledLifecycleNode, public std::enable_shared_from_this<Lifecycle_I2C_Input>
 {
     public:
         explicit Lifecycle_I2C_Input(const std::string & node_name, bool intra_proccess_comms = false)
-        : mwave_util::HandledLifecycleNode(node_name, "", intra_proccess_comms) {  }
-        
+            : mwave_util::HandledLifecycleNode(node_name, "", intra_proccess_comms)
+        {  }
+
         // Callback for walltimer to publish I2C values
         /**
          * Callback for walltime. This function gets involked by the time and 
@@ -50,8 +51,7 @@ class Lifecycle_I2C_Input : public mwave_util::HandledLifecycleNode
          * we still invoke publish, but the communication is blocked so that
          * no messages is actually transferred.
          */    
-        void
-        publish()
+        void publish()
         {
             // TODO: Make data be useful read from i2c
             // msg_->data = 0;
@@ -79,19 +79,26 @@ class Lifecycle_I2C_Input : public mwave_util::HandledLifecycleNode
          * TRANSITION_CALLBACK_ERROR or any uncaught exceptions to "errorprocessing"
          */
         //TODO: Can we pass more parameters to this function?
-        rcl_lifecycle_transition_key_t
-        on_configure(const rclcpp_lifecycle::State &)
+        rcl_lifecycle_transition_key_t on_configure(const rclcpp_lifecycle::State & state)
         {
+            (void)state;
             // Initialize and configure messages, publishers, and timers.
             // The lifecycle node API does return lifecycle components such as
             // lifecycle publishers. These entities obey the lifecycle and 
             // can comply to the current state of the node.
             // As of the beta version, there is only a lifecycle publisher
             // available.
-            msg_ = std::make_shared<std_msgs::msg::UInt16>();
-            pub_ = this->create_publisher<std_msgs::msg::UInt16>("managed_i2c_input");
-            //TODO: Dynamically set polling timer frequency
-            timer_ = this->create_wall_timer(1s, std::bind(&Lifecycle_I2C_Input::publish, this));
+
+            /* TODO:
+
+            std::vector<mwave_config::msg::I2CDevices> configs = GET_YOURSELF_SOME_CONFIGURATION();
+            std::vector<mwave_config::msg::I2CDevices>::const_iterator cfg_itr;
+            for(cfg_itr = configs.begin(); cfg_itr != configs.end(); cfg_itr++)
+            {
+                this->i2cbridge->configureDevice(*cfg_itr);
+            }
+
+            */
 
             //RCLCPP_INFO(get_logger(), "on_configure() is called.");
             RCUTILS_LOG_INFO_NAMED(get_name(), "on_configure() is called.");
@@ -116,9 +123,10 @@ class Lifecycle_I2C_Input : public mwave_util::HandledLifecycleNode
          * TRANSITION_CALLBACK_FAILURE transition to "inactive"
          * TRANSITION_CALLBACK_ERROR or any uncaught exceptions to "errorprocessing"
          */
-        rcl_lifecycle_transition_key_t
-        on_activate(const rclcpp_lifecycle::State &)
+        rcl_lifecycle_transition_key_t on_activate(const rclcpp_lifecycle::State & state)
         {
+            (void)state;
+
             // We explicitly activate the lifecycle publisher.
             // Starting from this point, all message are no longer
             // ignored but sent into the network.
@@ -149,9 +157,9 @@ class Lifecycle_I2C_Input : public mwave_util::HandledLifecycleNode
          * TRANSITION_CALLBACK_FAILURE transitions to "active"
          * TRANSITION_CALLBACK_ERROR or any uncaught exceptions to "errorprocessing"
          */
-        rcl_lifecycle_transition_key_t
-        on_deactivate(const rclcpp_lifecycle::State &)
+        rcl_lifecycle_transition_key_t on_deactivate(const rclcpp_lifecycle::State & state)
         {
+            (void)state;
             // We explicitly deactivate the lifecycle publisher.
             // Starting from this point, all messages are no longer
             // sent into the network.
@@ -200,6 +208,8 @@ class Lifecycle_I2C_Input : public mwave_util::HandledLifecycleNode
         }
         
     private:
+        I2CROSBridge::I2CBridge i2cbridge;
+
         std::shared_ptr<std_msgs::msg::UInt16> msg_;
 
         // We hold an instance of a lifecycle publisher. This lifecycle publisher

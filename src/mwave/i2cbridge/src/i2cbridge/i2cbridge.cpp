@@ -3,16 +3,14 @@
 
 namespace I2CROSBridge
 {
-	template<class HandledNodeT>
-	I2CBridge<HandledNodeT>::I2CBridge(std::shared_ptr<HandledNodeT> node) : node(node) {  }
-	template<class HandledNodeT>
-	I2CBridge<HandledNodeT>::~I2CBridge() {  }
+	I2CBridge::I2CBridge() {  }
+	I2CBridge::~I2CBridge() {  }
 
 	template<class HandledNodeT>
-	void I2CBridge<HandledNodeT>::configureDevice(const mwave_config::msg::I2CDevice& config)
+	void I2CBridge::configureDevice(const mwave_config::msg::I2CDevice& config, HandledNodeT* node)
 	{
 		if(config.device == "pca9555")
-			this->devices.push_back(ConfigurePCA9555(config, this->node));
+			this->devices.push_back(ConfigurePCA9555(config, node));
 
 		
 	}

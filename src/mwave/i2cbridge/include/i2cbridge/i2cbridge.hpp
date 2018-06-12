@@ -9,17 +9,16 @@
 
 namespace I2CROSBridge
 {
-	template<class HandledNodeT>
 	class I2CBridge
 	{
 		public:
-			I2CBridge(std::shared_ptr<HandledNodeT> node);
+			I2CBridge();
 			~I2CBridge();
 
-			void configureDevice(const mwave_config::msg::I2CDevice& config);
+			template<class HandledNodeT>
+			void configureDevice(const mwave_config::msg::I2CDevice& config, HandledNodeT* node);
 
 		private:
-			std::shared_ptr<HandledNodeT> node;
 			std::vector<std::shared_ptr<i2cpp::Device>> devices;
 	};
 }

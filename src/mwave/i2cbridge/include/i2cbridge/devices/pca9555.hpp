@@ -11,7 +11,7 @@ namespace I2CROSBridge
 	template<class HandledNodeT>
 	std::shared_ptr<i2cpp::PCA9555> ConfigurePCA9555(
 		const mwave_config::msg::I2CDevice& device,
-		std::shared_ptr<HandledNodeT> node);
+		HandledNodeT* node);
 }
 
 

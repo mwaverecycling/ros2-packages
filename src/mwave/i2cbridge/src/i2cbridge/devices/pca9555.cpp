@@ -11,7 +11,7 @@
 namespace I2CROSBridge
 {
     template<class HandledNodeT>
-	void ConfigurePCA9555OutputPin(uint_fast8_t pin, const std::string & topic, i2cpp::PCA9555::SharedPtr device, std::shared_ptr<HandledNodeT> node)
+	void ConfigurePCA9555OutputPin(uint_fast8_t pin, const std::string & topic, i2cpp::PCA9555::SharedPtr device, HandledNodeT* node)
 	{
         node->template add_subscription<std_msgs::msg::Bool>(topic,
             [device, node, pin](const std_msgs::msg::Bool::SharedPtr msg) -> void
@@ -22,7 +22,7 @@ namespace I2CROSBridge
         });
 	}
     template<class HandledNodeT>
-    void ConfigurePCA9555InputCallback(uint_fast16_t mask, std::string topics[16], i2cpp::PCA9555::SharedPtr device, std::shared_ptr<HandledNodeT> node)
+    void ConfigurePCA9555InputCallback(uint_fast16_t mask, std::string topics[16], i2cpp::PCA9555::SharedPtr device, HandledNodeT* node)
     {
         uint_fast16_t prev = device->get_state();
         uint_fast16_t result = device->read_input();
@@ -43,7 +43,7 @@ namespace I2CROSBridge
 
 
     template<class HandledNodeT>
-	std::shared_ptr<i2cpp::PCA9555> ConfigurePCA9555(const mwave_config::msg::I2CDevice& config, std::shared_ptr<HandledNodeT> node)
+	std::shared_ptr<i2cpp::PCA9555> ConfigurePCA9555(const mwave_config::msg::I2CDevice& config, HandledNodeT* node)
 	{
 		std::map<std::string, std::string> options = getOptions(config);
         uint_fast16_t mask = options.find("mode") != options.end()
