@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>mwave_input</name>
+  <name>mwave_module</name>
   <version>0.0.1</version>
-  <description>Generic package for publishing configured hardware input onto the ROS2 Network</description>
+  <description>Seed node used by all plant modules</description>
   <maintainer email="devs@mwaverecycling.com">MWave Recycling</maintainer>
-  <license>MIT License</license>
-
+  <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
