@@ -233,6 +233,9 @@ class Lifecycle_I2C_Input : public mwave_util::HandledLifecycleNode, public std:
  */
 int main(int argc, char * argv[])
 {
+    // TODO: See https://github.com/ros2/demos/blob/master/composition/src/server_component.cpp for implementation changes
+    //       needed for allowing other nodes to start this one.
+
     // Force flush of the stdout buffer.
     // This ensures a correct sync of all prints
     // even when executed simultaneously within the launch file.
