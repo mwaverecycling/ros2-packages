@@ -16,7 +16,7 @@
 
 #include "std_msgs/msg/u_int16.hpp"
 
-#include "mwave_util/nodes.hpp"
+#include "mwave_module/module_component.hpp"
 #include "i2cbridge/i2cbridge.hpp"
 
 using namespace std::chrono_literals;
