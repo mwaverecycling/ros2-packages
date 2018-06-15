@@ -1,3 +1,6 @@
+// TODO: Rewrite as a component.
+// Guide: https://github.com/ros2/demos/blob/master/composition/include/composition/listener_component.hpp
+
 #include <chrono>
 #include <iostream>
 #include <memory>

@@ -1,18 +1,18 @@
 #ifndef MWAVE_MODULE__IO_COMPONENT_HPP_
 #define MWAVE_MODULE__IO_COMPONENT_HPP_
 
-#include "mwave_module/module_component.hpp"
+#include "mwave_util/components.hpp"
 #include "mwave_config/srv/fetch_hmi_config.hpp"
 
 namespace mwave_module
 {
-	class HMI : public mwave_module::Module
+	class HMI : public mwave_util::BroadcastLifecycleNode
 	{
 	public: 
 		using SharedPtr = std::shared_ptr<HMI>;
 
 		explicit HMI(const std::string & node_name, const std::string & namespace = "", bool use_intra_process_comms = false)
-			: mwave_module::Module(node_name, "", intra_proccess_comms);
+			: mwave_util::BroadcastLifecycleNode(node_name, "", intra_proccess_comms);
 
 	private:
 		rclcpp::Client<mwave_config::srv::FetchHMIConfig>::SharedPtr client_;
