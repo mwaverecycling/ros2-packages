@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format2.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>mwave_config</name>
+  <name>mwave_messages</name>
   <version>0.0.1</version>
   <description>A package with configuration messages, services, and useful code for loading remote configs</description>
   <maintainer email="devs@mwaverecycling.com">MWave Recycling</maintainer>

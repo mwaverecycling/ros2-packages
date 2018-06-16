@@ -4,12 +4,12 @@
 #include <string>
 #include <map>
 
-#include "mwave_config/msg/i2_c_device.hpp"
+#include "mwave_messages/msg/i2_c_device.hpp"
 
 
 namespace I2CROSBridge
 {
-	std::map<std::string, std::string> getOptions(const mwave_config::msg::I2CDevice& device);
+	std::map<std::string, std::string> getOptions(const mwave_messages::msg::I2CDevice& device);
 }
 
 

@@ -15,7 +15,7 @@
 
   <exec_depend>rclcpp</exec_depend>
   <exec_depend>rcutils</exec_depend>
-  <exec_depend>mwave_config</exec_depend>
+  <exec_depend>mwave_messages</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

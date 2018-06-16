@@ -15,7 +15,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rcutils)
-find_package(mwave_config REQUIRED)
+find_package(mwave_messages REQUIRED)
 
 add_executable(config
   src/services/mariadb.cpp
@@ -27,7 +27,7 @@ target_link_libraries(config
 ament_target_dependencies(config
   "rclcpp"
   "rcutils"
-  "mwave_config"
+  "mwave_messages"
 ) 
 
 install(TARGETS

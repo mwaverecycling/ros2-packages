@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(PROJECT_NAME mwave_config)
+set(PROJECT_NAME mwave_messages)
 project(${PROJECT_NAME})
 
 # Default to C++14
@@ -19,7 +19,7 @@ find_package(rosidl_default_generators REQUIRED)
 file(GLOB MSGS "msg/*.msg")
 file(GLOB SRVS "srv/*.srv")
 
-rosidl_generate_interfaces(mwave_config
+rosidl_generate_interfaces(mwave_messages
     ${MSGS}
     ${SRVS}
     DEPENDENCIES builtin_interfaces

@@ -9,11 +9,11 @@
 #include <mysql/mysql.h>
 #include <mariadb++/connection.hpp>
 
-#include "mwave_config/msg/i2_c_device.hpp"
-#include "mwave_config/srv/fetch_config_type.hpp"
-#include "mwave_config/srv/fetch_io_config.hpp"
-#include "mwave_config/srv/fetch_hmi_config.hpp"
-#include "mwave_config/srv/fetch_logic_config.hpp"
+#include "mwave_messages/msg/i2_c_device.hpp"
+#include "mwave_messages/srv/fetch_config_type.hpp"
+#include "mwave_messages/srv/fetch_io_config.hpp"
+#include "mwave_messages/srv/fetch_hmi_config.hpp"
+#include "mwave_messages/srv/fetch_logic_config.hpp"
 
 std::vector<std::string> split(const std::string& str)
 {
@@ -49,8 +49,8 @@ class OrchestratorConfigNode : public rclcpp::Node
             //A callback function for when nodes initiate their configuration. (Message Type: FetchConfigType)
             auto handle_fetch_config_type =
                 [this](const std::shared_ptr<rmw_request_id_t> request_header,
-                       const std::shared_ptr<mwave_config::srv::FetchConfigType::Request> request,
-                       std::shared_ptr<mwave_config::srv::FetchConfigType::Response> response) -> void
+                       const std::shared_ptr<mwave_messages::srv::FetchConfigType::Request> request,
+                       std::shared_ptr<mwave_messages::srv::FetchConfigType::Response> response) -> void
             {
                 (void)request_header;
                 RCLCPP_INFO(this->get_logger(), "Request of type for node: %s", request->node_name.c_str());
@@ -76,8 +76,8 @@ class OrchestratorConfigNode : public rclcpp::Node
             //A callback function for when nodes configure thier input and output devices. (Message Type: FetchIOConfig)
             auto handle_fetch_io_config = 
                 [this](const std::shared_ptr<rmw_request_id_t> request_header,
-                       const std::shared_ptr<mwave_config::srv::FetchIOConfig::Request> request,
-                       std::shared_ptr<mwave_config::srv::FetchIOConfig::Response> response) -> void
+                       const std::shared_ptr<mwave_messages::srv::FetchIOConfig::Request> request,
+                       std::shared_ptr<mwave_messages::srv::FetchIOConfig::Response> response) -> void
             {
                 (void)request_header;
                 RCLCPP_INFO(this->get_logger(), "Request of input/output for node: %s", request->node.c_str());
@@ -85,14 +85,14 @@ class OrchestratorConfigNode : public rclcpp::Node
                 query_config_i2c->set_string(0, request->node);
                 auto sql_result = query_config_i2c->query();
                 
-                std::vector<mwave_config::msg::I2CDevice> ret_devices;
+                std::vector<mwave_messages::msg::I2CDevice> ret_devices;
                 
                 while(sql_result->next()) {
                     auto device = this->parseDevice(sql_result);
                     ret_devices.push_back(*device);
                 }
 
-                std::vector<mwave_config::msg::I2CDevice>::iterator itr;
+                std::vector<mwave_messages::msg::I2CDevice>::iterator itr;
                 for(itr = ret_devices.begin(); itr != ret_devices.end(); itr++) {
                     query_topics_i2c->set_string(0, request->node);
                     query_topics_i2c->set_unsigned8(1, itr->bus);
@@ -109,7 +109,7 @@ class OrchestratorConfigNode : public rclcpp::Node
             }; 
             //A callback function for when nodes configure their HMI(s) (Message Type: FetchHMIConfig)
             auto handle_fetch_hmi_config = 
-                [this](const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<mwave_config::srv::FetchHMIConfig::Request> request, std::shared_ptr<mwave_config::srv::FetchHMIConfig::Response> response) -> void
+                [this](const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<mwave_messages::srv::FetchHMIConfig::Request> request, std::shared_ptr<mwave_messages::srv::FetchHMIConfig::Response> response) -> void
                 {
                     (void)request_header;
                     (void)request;
@@ -117,24 +117,24 @@ class OrchestratorConfigNode : public rclcpp::Node
                 };            
             //A callback function for when nodes configure their logic modules (Message Type: FetchLogicConfig)
             auto handle_fetch_logic_config = 
-                [this](const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<mwave_config::srv::FetchLogicConfig::Request> request, std::shared_ptr<mwave_config::srv::FetchLogicConfig::Response> response) -> void
+                [this](const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<mwave_messages::srv::FetchLogicConfig::Request> request, std::shared_ptr<mwave_messages::srv::FetchLogicConfig::Response> response) -> void
                 {
                     (void)request_header;
                     (void)request;
                     response->dummy_response = "Dummy Response.";
                 };            
             
-            srv_fetch_config_type = create_service<mwave_config::srv::FetchConfigType>("FetchConfigType", handle_fetch_config_type);
-            srv_fetch_io_config = create_service<mwave_config::srv::FetchIOConfig>("FetchIOConfig", handle_fetch_io_config);
-            srv_fetch_hmi_config = create_service<mwave_config::srv::FetchHMIConfig>("FetchHMIConfig", handle_fetch_hmi_config);
-            srv_fetch_logic_config = create_service<mwave_config::srv::FetchLogicConfig>("FetchLogicConfig", handle_fetch_logic_config);
+            srv_fetch_config_type = create_service<mwave_messages::srv::FetchConfigType>("FetchConfigType", handle_fetch_config_type);
+            srv_fetch_io_config = create_service<mwave_messages::srv::FetchIOConfig>("FetchIOConfig", handle_fetch_io_config);
+            srv_fetch_hmi_config = create_service<mwave_messages::srv::FetchHMIConfig>("FetchHMIConfig", handle_fetch_hmi_config);
+            srv_fetch_logic_config = create_service<mwave_messages::srv::FetchLogicConfig>("FetchLogicConfig", handle_fetch_logic_config);
 
             RCLCPP_INFO(this->get_logger(), "Listening!");
         };
 
-        std::shared_ptr<mwave_config::msg::I2CDevice> parseDevice(const std::shared_ptr<mariadb::result_set>& sql_result)
+        std::shared_ptr<mwave_messages::msg::I2CDevice> parseDevice(const std::shared_ptr<mariadb::result_set>& sql_result)
         {
-            mwave_config::msg::I2CDevice config;
+            mwave_messages::msg::I2CDevice config;
 
             config.bus = sql_result->get_unsigned8("bus");
             config.address = sql_result->get_unsigned8("address");
@@ -146,15 +146,15 @@ class OrchestratorConfigNode : public rclcpp::Node
             config.option_values = split(option_values_raw);
 
             config.topics = std::vector<std::string>();
-            return std::make_shared<mwave_config::msg::I2CDevice>(config);
+            return std::make_shared<mwave_messages::msg::I2CDevice>(config);
         };
 
 
     private:
-            rclcpp::Service<mwave_config::srv::FetchConfigType>::SharedPtr srv_fetch_config_type;
-            rclcpp::Service<mwave_config::srv::FetchIOConfig>::SharedPtr srv_fetch_io_config;
-            rclcpp::Service<mwave_config::srv::FetchHMIConfig>::SharedPtr srv_fetch_hmi_config;
-            rclcpp::Service<mwave_config::srv::FetchLogicConfig>::SharedPtr srv_fetch_logic_config;
+            rclcpp::Service<mwave_messages::srv::FetchConfigType>::SharedPtr srv_fetch_config_type;
+            rclcpp::Service<mwave_messages::srv::FetchIOConfig>::SharedPtr srv_fetch_io_config;
+            rclcpp::Service<mwave_messages::srv::FetchHMIConfig>::SharedPtr srv_fetch_hmi_config;
+            rclcpp::Service<mwave_messages::srv::FetchLogicConfig>::SharedPtr srv_fetch_logic_config;
 
             //TODO: Load in configs from mwave_orchestrator/private/Orchestrator.db.json
             std::shared_ptr<mariadb::account> sql_account = mariadb::account::create("127.0.0.1", "ros2", "oCXxFFUmBbVbV3gTM35DaTYveA4Ahh2P", "ros2config");

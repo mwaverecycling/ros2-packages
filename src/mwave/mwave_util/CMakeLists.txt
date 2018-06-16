@@ -14,7 +14,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
-
+find_package(mwave_messages REQUIRED)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 include_directories(include)
@@ -27,6 +27,7 @@ ament_target_dependencies(${PROJECT_NAME}
     "rclcpp"
     "rclcpp_lifecycle"
     "std_msgs"
+    "mwave_messages"
 )
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE "RCLCPP_BUILDING_LIBRARY")
