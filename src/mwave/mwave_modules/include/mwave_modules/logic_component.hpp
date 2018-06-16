@@ -1,8 +1,8 @@
-#ifndef MWAVE_MODULE__IO_COMPONENT_HPP_
-#define MWAVE_MODULE__IO_COMPONENT_HPP_
+#ifndef MWAVE_MODULES__IO_COMPONENT_HPP_
+#define MWAVE_MODULES__IO_COMPONENT_HPP_
 
 #include "mwave_util/components.hpp"
-#include "mwave_config/srv/fetch_logic_config.hpp"
+#include "mwave_messages/srv/fetch_logic_config.hpp"
 
 namespace mwave_module
 {
@@ -15,7 +15,7 @@ namespace mwave_module
 			: mwave_util::BroadcastLifecycleNode(node_name, "", intra_proccess_comms);
 
 	private:
-		rclcpp::Client<mwave_config::srv::FetchLogicConfig>::SharedPtr client_;
+		rclcpp::Client<mwave_messages::srv::FetchLogicConfig>::SharedPtr client_;
 	};
 } //namespace mwave_module
-#endif //MWAVE_MODULE__IO_COMPONENT_HPP_
+#endif //MWAVE_MODULES__IO_COMPONENT_HPP_

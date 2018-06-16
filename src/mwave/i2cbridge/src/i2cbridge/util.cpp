@@ -4,7 +4,7 @@
 
 namespace I2CROSBridge
 {
-	std::map<std::string, std::string> getOptions(const mwave_config::msg::I2CDevice& device)
+	std::map<std::string, std::string> getOptions(const mwave_messages::msg::I2CDevice& device)
 	{
 		std::map<std::string, std::string> ret;
 

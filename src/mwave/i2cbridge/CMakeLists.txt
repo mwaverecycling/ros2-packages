@@ -17,7 +17,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(mwave_util REQUIRED)
-find_package(mwave_config REQUIRED)
+find_package(mwave_messages REQUIRED)
 find_package(std_msgs REQUIRED)
 
 
@@ -31,7 +31,7 @@ add_library(${PROJECT_NAME} ${SOURCES})
 ament_target_dependencies(${PROJECT_NAME}
     "rclcpp"
     "mwave_util"
-    "mwave_config"
+    "mwave_messages"
     "std_msgs"
 )
 
@@ -58,7 +58,7 @@ ament_export_libraries(${PROJECT_NAME})
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(mwave_util)
-ament_export_dependencies(mwave_config)
+ament_export_dependencies(mwave_messages)
 ament_export_dependencies(std_msgs)
 
 ament_package()

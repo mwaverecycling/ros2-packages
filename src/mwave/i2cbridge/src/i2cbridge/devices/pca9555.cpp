@@ -43,7 +43,7 @@ namespace I2CROSBridge
 
 
     template<class HandledNodeT>
-	std::shared_ptr<i2cpp::PCA9555> ConfigurePCA9555(const mwave_config::msg::I2CDevice& config, HandledNodeT* node)
+	std::shared_ptr<i2cpp::PCA9555> ConfigurePCA9555(const mwave_messages::msg::I2CDevice& config, HandledNodeT* node)
 	{
 		std::map<std::string, std::string> options = getOptions(config);
         uint_fast16_t mask = options.find("mode") != options.end()

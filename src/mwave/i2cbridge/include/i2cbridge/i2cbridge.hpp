@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "mwave_config/msg/i2_c_device.hpp"
+#include "mwave_messages/msg/i2_c_device.hpp"
 #include "i2cpp/device.hpp"
 
 namespace I2CROSBridge
@@ -16,7 +16,7 @@ namespace I2CROSBridge
 			~I2CBridge();
 
 			template<class HandledNodeT>
-			void configureDevice(const mwave_config::msg::I2CDevice& config, HandledNodeT* node);
+			void configureDevice(const mwave_messages::msg::I2CDevice& config, HandledNodeT* node);
 
 		private:
 			std::vector<std::shared_ptr<i2cpp::Device>> devices;

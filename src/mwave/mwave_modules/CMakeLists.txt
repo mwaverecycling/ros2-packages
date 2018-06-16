@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(PROJECT_NAME mwave_module)
+set(PROJECT_NAME mwave_modules)
 project(${PROJECT_NAME})
 
 # Default to C++14
@@ -21,6 +21,8 @@ find_package(lifecycle_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(i2cbridge REQUIRED)
 
+include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
+
 function(custom_executable subfolder target)
   add_executable(${target} src/${subfolder}/${target}.cpp)
   ament_target_dependencies(${target}
@@ -34,7 +36,7 @@ function(custom_executable subfolder target)
   DESTINATION lib/${PROJECT_NAME})
 endfunction()
 
-custom_executable(io input)
+custom_executable(seed seed)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

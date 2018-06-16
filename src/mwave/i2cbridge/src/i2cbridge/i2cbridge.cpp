@@ -7,7 +7,7 @@ namespace I2CROSBridge
 	I2CBridge::~I2CBridge() {  }
 
 	template<class HandledNodeT>
-	void I2CBridge::configureDevice(const mwave_config::msg::I2CDevice& config, HandledNodeT* node)
+	void I2CBridge::configureDevice(const mwave_messages::msg::I2CDevice& config, HandledNodeT* node)
 	{
 		if(config.device == "pca9555")
 			this->devices.push_back(ConfigurePCA9555(config, node));

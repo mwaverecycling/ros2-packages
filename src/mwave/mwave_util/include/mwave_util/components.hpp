@@ -2,24 +2,29 @@
 #define MWAVE_UTIL__COMPONENT_HPP_
 
 #include "mwave_util/nodes.hpp"
-#include "mwave_config/msg/broadcast.msg"
+#include "mwave_messages/msg/broadcast.hpp"
 
 namespace mwave_util
 {
-	class BroadcastLifecycleNode : public mwave_util::HandledLifecycleNode 
+	class BroadcastLifecycleNode : public HandledLifecycleNode 
 	{
 	public: 
-		using SharedPtr = std::shared_ptr<Module>;
+		using SharedPtr = std::shared_ptr<BroadcastLifecycleNode>;
 
-		explicit BroadcastLifecycleNode(const std::string & node_name, const std::string & namespace = "", bool use_intra_process_comms = false)
-			: mwave_util::HandledLifecycleNode(node_name, "", intra_proccess_comms);
+		explicit BroadcastLifecycleNode(
+                const std::string& node_name, 
+                const std::string& namespace_ = "", 
+                bool use_intra_process_comms = false
+        );
 
 	protected:
-		void broadcast(std::string type, std::string message);
+		void broadcast(std::string& type, std::string& message);
+        virtual void on_broadcast(const mwave_messages::msg::Broadcast::SharedPtr msg);
 
 	private:
-		rclcpp::Publisher<mwave_config::msg::broadcast, std::allocator<void>> pub_broadcast_;
-		// rclcpp Subscription
+		rclcpp::Publisher<mwave_messages::msg::Broadcast>::SharedPtr _pub_broadcast;
+        rclcpp::Subscription<mwave_messages::msg::Broadcast>::SharedPtr _sub_broadcast;
+        std::shared_ptr<mwave_messages::msg::Broadcast> _msg = std::make_shared<mwave_messages::msg::Broadcast>();
 	};
 } //namespace mwave_module
 #endif //MWAVE_MODULE__MODULE_COMPONENT_HPP_

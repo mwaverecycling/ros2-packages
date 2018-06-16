@@ -19,7 +19,7 @@
 
 #include "std_msgs/msg/u_int16.hpp"
 
-#include "mwave_module/module_component.hpp"
+#include "mwave_modules/io_component.hpp"
 #include "i2cbridge/i2cbridge.hpp"
 
 using namespace std::chrono_literals;
@@ -94,8 +94,8 @@ class Lifecycle_I2C_Input : public mwave_util::HandledLifecycleNode, public std:
 
             /* TODO:
 
-            std::vector<mwave_config::msg::I2CDevices> configs = GET_YOURSELF_SOME_CONFIGURATION();
-            std::vector<mwave_config::msg::I2CDevices>::const_iterator cfg_itr;
+            std::vector<mwave_messages::msg::I2CDevices> configs = GET_YOURSELF_SOME_CONFIGURATION();
+            std::vector<mwave_messages::msg::I2CDevices>::const_iterator cfg_itr;
             for(cfg_itr = configs.begin(); cfg_itr != configs.end(); cfg_itr++)
             {
                 this->i2cbridge->configureDevice(*cfg_itr);
