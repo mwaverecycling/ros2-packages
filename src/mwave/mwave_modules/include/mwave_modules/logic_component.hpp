@@ -6,16 +6,15 @@
 
 namespace mwave_module
 {
-	class Logic : public mwave_util::BroadcastLifecycleNode
+	class LogicComponent : public mwave_util::BroadcastNode
 	{
-	public: 
-		using SharedPtr = std::shared_ptr<Logic>;
-
-		explicit Logic(const std::string & node_name, const std::string & namespace = "", bool use_intra_process_comms = false)
-			: mwave_util::BroadcastLifecycleNode(node_name, "", intra_proccess_comms);
-
-	private:
-		rclcpp::Client<mwave_messages::srv::FetchLogicConfig>::SharedPtr client_;
+		public: 
+			using SharedPtr = std::shared_ptr<Logic>;
+	
+			explicit Logic(const std::string & node_name, const std::string & namespace = "");
+	
+		private:
+			rclcpp::Client<mwave_messages::srv::FetchLogicConfig>::SharedPtr client_;
 	};
 } //namespace mwave_module
 #endif //MWAVE_MODULES__IO_COMPONENT_HPP_

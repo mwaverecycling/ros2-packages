@@ -6,16 +6,15 @@
 
 namespace mwave_module
 {
-	class IO : public mwave_util::BroadcastLifecycleNode
+	class IOComponent : public mwave_util::BroadcastNode
 	{
-	public: 
-		using SharedPtr = std::shared_ptr<IO>;
+		public: 
+			using SharedPtr = std::shared_ptr<IOComponent>;
+	
+			explicit IOComponent(const std::string & node_name, const std::string & namespace = "");
 
-		explicit IO(const std::string & node_name, const std::string & namespace = "", bool use_intra_process_comms = false)
-			: mwave_util::BroadcastLifecycleNode(node_name, "", intra_proccess_comms);
-
-	private:
-		rclcpp::Client<mwave_messages::srv::FetchIOConfig>::SharedPtr client_;
+		private:
+			rclcpp::Client<mwave_messages::srv::FetchIOConfig>::SharedPtr client_;
 	};
 } //namespace mwave_module
 #endif //MWAVE_MODULES__IO_COMPONENT_HPP_
