@@ -11,7 +11,7 @@ namespace mwave_module
 		public: 
 			using SharedPtr = std::shared_ptr<HMI>;
 	
-			explicit HMI(const std::string & node_name, const std::string & namespace = "");
+			explicit HMI(const std::string & node_name, const std::string & namespace_ = "");
 		private:
 			rclcpp::Client<mwave_messages::srv::FetchHMIConfig>::SharedPtr client_;
 	};

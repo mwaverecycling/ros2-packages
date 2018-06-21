@@ -11,7 +11,7 @@ namespace mwave_module
 		public: 
 			using SharedPtr = std::shared_ptr<IOComponent>;
 	
-			explicit IOComponent(const std::string & node_name, const std::string & namespace = "");
+			explicit IOComponent(const std::string & node_name, const std::string & namespace_ = "");
 
 		private:
 			rclcpp::Client<mwave_messages::srv::FetchIOConfig>::SharedPtr client_;
