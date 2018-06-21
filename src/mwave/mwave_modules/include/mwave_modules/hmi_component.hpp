@@ -6,16 +6,14 @@
 
 namespace mwave_module
 {
-	class HMI : public mwave_util::BroadcastLifecycleNode
+	class HMIComponent : public mwave_util::BroadcastNode
 	{
-	public: 
-		using SharedPtr = std::shared_ptr<HMI>;
-
-		explicit HMI(const std::string & node_name, const std::string & namespace = "", bool use_intra_process_comms = false)
-			: mwave_util::BroadcastLifecycleNode(node_name, "", intra_proccess_comms);
-
-	private:
-		rclcpp::Client<mwave_messages::srv::FetchHMIConfig>::SharedPtr client_;
+		public: 
+			using SharedPtr = std::shared_ptr<HMI>;
+	
+			explicit HMI(const std::string & node_name, const std::string & namespace = "");
+		private:
+			rclcpp::Client<mwave_messages::srv::FetchHMIConfig>::SharedPtr client_;
 	};
 } //namespace mwave_module
 #endif //MWAVES_MODULE__IO_COMPONENT_HPP_

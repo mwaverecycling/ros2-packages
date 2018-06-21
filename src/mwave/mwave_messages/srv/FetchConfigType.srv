@@ -1,4 +1,4 @@
 string node_name
 ---
 string error
-string[] nodes
+string=3[] nodes
