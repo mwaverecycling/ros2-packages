@@ -16,9 +16,9 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(mwave_util REQUIRED)
 find_package(mwave_messages REQUIRED)
-find_package(std_msgs REQUIRED)
 
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
@@ -26,13 +26,14 @@ include_directories(include)
 include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
 
 add_library(${PROJECT_NAME} ${SOURCES})
+target_link_libraries(${PROJECT_NAME} i2cpp)
 
 # Dependents before Dependencies
 ament_target_dependencies(${PROJECT_NAME}
     "rclcpp"
+    "std_msgs"
     "mwave_util"
     "mwave_messages"
-    "std_msgs"
 )
 
 if(NOT LINUX)

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-namespace I2CROSBridge
+namespace I2CBridge
 {
 	std::map<std::string, std::string> getOptions(const mwave_messages::msg::I2CDevice& device)
 	{

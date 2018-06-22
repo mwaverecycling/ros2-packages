@@ -7,9 +7,14 @@
 #include "mwave_messages/msg/i2_c_device.hpp"
 
 
-namespace I2CROSBridge
+namespace I2CBridge
 {
 	std::map<std::string, std::string> getOptions(const mwave_messages::msg::I2CDevice& device);
+
+	class DeviceBridge
+	{
+
+	};
 }
 
 

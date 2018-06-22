@@ -21,22 +21,17 @@ namespace mwave_util
             ) : Node(node_name, namespace_, use_intra_process_comms) {  }
             virtual void start();
 
-            template<typename MessageT, typename Alloc = std::allocator<void>>
-            void add_publisher(const std::string & topic,
-                const rmw_qos_profile_t & qos_profile = rmw_qos_profile_default,
-                std::shared_ptr<Alloc> allocator = nullptr)
-            {
-                auto ret = this->create_publisher<MessageT>(topic, qos_profile, allocator);
-                this->publishers[topic] = ret;
-            }
-
             template<
                 typename MessageT,
                 typename Alloc = std::allocator<void>,
                 typename PublisherT = rclcpp::Publisher<MessageT, Alloc>>
-            std::shared_ptr<PublisherT> get_publisher(const std::string & topic)
+            std::shared_ptr<PublisherT> add_publisher(const std::string & topic,
+                const rmw_qos_profile_t & qos_profile = rmw_qos_profile_default,
+                std::shared_ptr<Alloc> allocator = nullptr)
             {
-                return this->publishers.at(topic);
+                auto ret = this->create_publisher<MessageT>(topic, qos_profile, allocator);
+                this->publishers.push_back(ret);
+                return ret;
             }
 
             template<
@@ -70,7 +65,7 @@ namespace mwave_util
             }
             
         private:
-            std::map<std::string, rclcpp::PublisherBase::SharedPtr> publishers;
+            std::vector<rclcpp::PublisherBase::SharedPtr> publishers;
             std::vector<rclcpp::SubscriptionBase::SharedPtr> subscriptions;
             std::vector<rclcpp::TimerBase::SharedPtr> timers;
     };

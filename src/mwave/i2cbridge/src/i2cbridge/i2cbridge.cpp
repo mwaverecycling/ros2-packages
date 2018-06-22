@@ -1,21 +1,15 @@
-/*
-
 #include "i2cbridge/i2cbridge.hpp"
-#include "i2cbridge/devices/pca9555.hpp"
 
-namespace I2CROSBridge
+namespace I2CBridge
 {
 	I2CBridge::I2CBridge() {  }
 	I2CBridge::~I2CBridge() {  }
 
-	template<class HandledNodeT>
-	void I2CBridge::configureDevice(const mwave_messages::msg::I2CDevice& config, HandledNodeT* node)
+	void I2CBridge::configureDevice(const mwave_messages::msg::I2CDevice& config, rclcpp::Node* node)
 	{
 		if(config.device == "pca9555") {
-			std::shared_ptr<i2cpp::PCA9555> device = ConfigurePCA9555(config, node);
+			PCA9555Bridge::SharedPtr device = std::make_shared<PCA9555Bridge>(config, node);
 			this->devices.push_back(device);
 		}
 	}
 }
-
-*/
