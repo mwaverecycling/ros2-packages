@@ -1,14 +1,18 @@
+
+
 #include "mwave_util/nodes.hpp"
 
 namespace mwave_util
 {
+    /*
     HandledNode::HandledNode(const std::string & node_name, const std::string & namespace_, bool use_intra_process_comms)
         : Node(node_name, namespace_, use_intra_process_comms) {  }
+    */
     void HandledNode::start()
     {
         RCLCPP_INFO(this->get_logger(), "Started node '%s'", this->get_name());
     }
-
+    /*
     template<typename MessageT, typename Alloc>
     void HandledNode::add_publisher(const std::string & topic,
         const rmw_qos_profile_t & qos_profile,
@@ -48,4 +52,5 @@ namespace mwave_util
     	this->timers.push_back(ret);
     	return ret;
     }
+    */
 }

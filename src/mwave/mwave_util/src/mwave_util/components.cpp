@@ -18,9 +18,9 @@ namespace mwave_util
         _bmsg->type = type;
         _bmsg->message = message;
         _bpub->publish(_bmsg);
-    };
+    }
 
     void BroadcastNode::on_broadcast(const mwave_messages::msg::Broadcast::SharedPtr msg) {
         RCLCPP_INFO(this->get_logger(), "Broadcast[%s]: %s", msg->type.c_str(), msg->message.c_str());
-    };
+    }
 }

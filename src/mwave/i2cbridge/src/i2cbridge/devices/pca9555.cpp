@@ -1,3 +1,5 @@
+/*
+
 #include "i2cbridge/devices/pca9555.hpp"
 #include "i2cbridge/util.hpp"
 
@@ -34,12 +36,12 @@ namespace I2CROSBridge
                 if((prev & (1 << i)) != (result & (1 << i))) {
                     auto msg = std::make_shared<std_msgs::msg::Bool>();
                     msg->data = (result & (1 << i)) > 0;
-                    node->template get_publisher<std_msgs::msg::Bool>(topics[i])->publish(msg);
+                    //node->template get_publisher<std_msgs::msg::Bool>(topics[i])->publish(msg);
                 }
             }
         }
         device->set_state(result);
-    };
+    }
 
 
     template<class HandledNodeT>
@@ -92,3 +94,5 @@ namespace I2CROSBridge
 		return device_ref;
 	}
 }
+
+*/

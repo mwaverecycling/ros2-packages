@@ -13,9 +13,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclcpp_lifecycle REQUIRED)
 find_package(rcutils)
-find_package(lifecycle_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(mwave_util REQUIRED)
 find_package(i2cbridge REQUIRED)
@@ -25,9 +23,9 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 
 add_executable(seed ${SOURCES})
+target_link_libraries(seed i2cpp)
 ament_target_dependencies(seed
     "rclcpp"
-    "rclcpp_lifecycle"
     "rcutils"
     "std_msgs"
     "mwave_util"

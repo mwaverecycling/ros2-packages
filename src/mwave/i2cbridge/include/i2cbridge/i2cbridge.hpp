@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "mwave_messages/msg/i2_c_device.hpp"
+#include "i2cbridge/devices/pca9555.hpp"
 #include "i2cpp/device.hpp"
 
 namespace I2CROSBridge
@@ -12,11 +13,17 @@ namespace I2CROSBridge
 	class I2CBridge
 	{
 		public:
-			I2CBridge();
-			~I2CBridge();
+			I2CBridge() {  }
+			~I2CBridge() = default;
 
 			template<class HandledNodeT>
-			void configureDevice(const mwave_messages::msg::I2CDevice& config, HandledNodeT* node);
+			void configureDevice(const mwave_messages::msg::I2CDevice& config, HandledNodeT* node)
+			{
+				if(config.device == "pca9555") {
+					std::shared_ptr<i2cpp::PCA9555> device = ConfigurePCA9555(config, node);
+					this->devices.push_back(device);
+				}
+			}
 
 		private:
 			std::vector<std::shared_ptr<i2cpp::Device>> devices;

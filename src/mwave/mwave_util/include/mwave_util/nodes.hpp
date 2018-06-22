@@ -2,8 +2,6 @@
 #define MWAVEUTIL_HANDLEDNODE_HPP
 
 #include "rclcpp/rclcpp.hpp"
-#include "rclcpp_lifecycle/lifecycle_node.hpp"
-#include "rclcpp_lifecycle/lifecycle_publisher.hpp"
 
 #include <memory>
 #include <vector>
@@ -20,19 +18,26 @@ namespace mwave_util
                 const std::string& node_name, 
                 const std::string& namespace_ = "", 
                 bool use_intra_process_comms = false
-            );
+            ) : Node(node_name, namespace_, use_intra_process_comms) {  }
             virtual void start();
 
             template<typename MessageT, typename Alloc = std::allocator<void>>
             void add_publisher(const std::string & topic,
                 const rmw_qos_profile_t & qos_profile = rmw_qos_profile_default,
-                std::shared_ptr<Alloc> allocator = nullptr);
+                std::shared_ptr<Alloc> allocator = nullptr)
+            {
+                auto ret = this->create_publisher<MessageT>(topic, qos_profile, allocator);
+                this->publishers[topic] = ret;
+            }
 
             template<
                 typename MessageT,
                 typename Alloc = std::allocator<void>,
-                typename PublisherT = rclcpp_lifecycle::LifecyclePublisher<MessageT, Alloc>>
-            std::shared_ptr<PublisherT> get_publisher(const std::string & topic);
+                typename PublisherT = rclcpp::Publisher<MessageT, Alloc>>
+            std::shared_ptr<PublisherT> get_publisher(const std::string & topic)
+            {
+                return this->publishers.at(topic);
+            }
 
             template<
                 typename MessageT,
@@ -47,18 +52,23 @@ namespace mwave_util
                 bool ignore_local_publications = false,
                 typename rclcpp::message_memory_strategy::MessageMemoryStrategy<MessageT, Alloc>::SharedPtr
                 msg_mem_strat = nullptr,
-                std::shared_ptr<Alloc> allocator = nullptr);
+                std::shared_ptr<Alloc> allocator = nullptr)
+            {
+                auto ret = this->create_subscription<MessageT>(topic_name, callback, qos_profile, group, ignore_local_publications, msg_mem_strat, allocator);
+                this->subscriptions.push_back(ret);
+                return ret;
+            }
 
             template<typename DurationT = std::milli, typename CallbackT>
             typename rclcpp::WallTimer<CallbackT>::SharedPtr
             add_wall_timer(std::chrono::duration<int64_t, DurationT> period, CallbackT callback,
-                rclcpp::callback_group::CallbackGroup::SharedPtr group = nullptr);
-
-
-            virtual rcl_lifecycle_transition_key_t on_activate(const rclcpp_lifecycle::State & state);
-            virtual rcl_lifecycle_transition_key_t on_deactivate(const rclcpp_lifecycle::State & state);
-            virtual rcl_lifecycle_transition_key_t on_cleanup(const rclcpp_lifecycle::State & state);
-
+                rclcpp::callback_group::CallbackGroup::SharedPtr group = nullptr)
+            {
+                auto ret = this->create_wall_timer(period, callback, group);
+                this->timers.push_back(ret);
+                return ret;
+            }
+            
         private:
             std::map<std::string, rclcpp::PublisherBase::SharedPtr> publishers;
             std::vector<rclcpp::SubscriptionBase::SharedPtr> subscriptions;
