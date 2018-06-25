@@ -18,32 +18,6 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-class SeedNode : public rclcpp::Node
-{
-	public:
-		explicit SeedNode(const std::string & name, rclcpp::executors::SingleThreadedExecutor & exec) : rclcpp::Node(name)
-		{
-			// Create service client for getting a list of necessary components
-			rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedPtr config_client = 
-				this->create_client<mwave_messages::srv::FetchConfigType>("/FetchConfigType");
-			auto config_request = std::make_shared<mwave_messages::srv::FetchConfigType::Request>();
-			// Populate request argments and make request
-			config_request->node_name = name;
-			auto future = config_client->async_send_request(config_request);
-			// The return is an array of char[]'s that represent the type of components: ion, input/output; log, logic; hmi, GUI.
-			auto result = future.get();
-			for (std::string type : result->nodes) {
-				if (type == "ion") {
-					exec.add_node(std::make_shared<mwave_modules::IOComponent>(name + "_ion"));				
-				} else if (type == "log") {
-					exec.add_node(std::make_shared<mwave_modules::LogicComponent>(name + "_log"));
-				} else if (type == "hmi") {
-					exec.add_node(std::make_shared<mwave_modules::HMIComponent>(name + "_hmi"));
-				}
-			}
-		}
-};
-
 int main(int argc, char * argv[])
 {
     // Force flush of the stdout buffer
@@ -53,13 +27,34 @@ int main(int argc, char * argv[])
 
 	// TODO: Create a config file for plant module name
 	std::string name = "testall";
-	// TODO: Look into making this a multithreaded executor
+
+	// TODO: Make this a mutlithreaded executor
 	rclcpp::executors::SingleThreadedExecutor exec;
-	
-	auto seed_node = std::make_shared<SeedNode>(name, exec);
-    
+	auto seed_node = std::make_shared<rclcpp::Node>(name);
+	// Get config for exec
+	// spin till future
+
+	rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedPtr config_client = 
+				seed_node->create_client<mwave_messages::srv::FetchConfigType>("/FetchConfigType");
+
+	auto config_request = std::make_shared<mwave_messages::srv::FetchConfigType::Request>();
+	config_request->node_name = name;
+
+	auto future_result = config_client->async_send_request(config_request, [&name, &exec](rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedFuture future) -> void {
+		for(std::string type : future.get()->nodes) {
+			if (type == "ion") {
+				exec.add_node(std::make_shared<mwave_modules::IOComponent>(name + "_ion"));				
+			} else if (type == "log") {
+				exec.add_node(std::make_shared<mwave_modules::LogicComponent>(name + "_log"));
+			} else if (type == "hmi") {
+				exec.add_node(std::make_shared<mwave_modules::HMIComponent>(name + "_hmi"));
+			}			
+		}
+		exec.remove_node(seed_node);
+	});
+
+	exec.add_node(seed_node);
     exec.spin();
-    
     rclcpp::shutdown();
     
     return 0;
