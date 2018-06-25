@@ -50,7 +50,7 @@ int main(int argc, char * argv[])
 				exec.add_node(std::make_shared<mwave_modules::HMIComponent>(name + "_hmi"));
 			}			
 		}
-		exec.remove_node(seed_node);
+		//exec.remove_node(seed_node);
 	});
 
 	exec.add_node(seed_node);
