@@ -21,12 +21,12 @@ find_package(mwave_util REQUIRED)
 find_package(mwave_messages REQUIRED)
 
 
-file(GLOB_RECURSE SOURCES "src/*.cpp")
 include_directories(include)
-include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
+#include_directories("${CMAKE_CURRENT_BINARY_DIR}/include")
+file(GLOB_RECURSE ${PROJECT_NAME}_SRCS "src/*.cpp")
+message(${${PROJECT_NAME}_SRCS})
 
-add_library(${PROJECT_NAME} ${SOURCES})
-target_link_libraries(${PROJECT_NAME} i2cpp)
+add_library(${PROJECT_NAME} ${${PROJECT_NAME}_SRCS})
 
 # Dependents before Dependencies
 ament_target_dependencies(${PROJECT_NAME}
@@ -35,6 +35,7 @@ ament_target_dependencies(${PROJECT_NAME}
     "mwave_util"
     "mwave_messages"
 )
+target_link_libraries(${PROJECT_NAME} i2cpp)
 
 if(NOT LINUX)
 	set(MOCK $ENV{I2CPP})
@@ -44,8 +45,6 @@ if(NOT LINUX)
 	link_directories("${MOCK}/lib")
 endif()
 
-target_link_libraries(${PROJECT_NAME} i2cpp)
-target_compile_definitions(${PROJECT_NAME} PRIVATE "RCLCPP_BUILDING_LIBRARY")
 install(
 	TARGETS ${PROJECT_NAME}
 	ARCHIVE DESTINATION lib

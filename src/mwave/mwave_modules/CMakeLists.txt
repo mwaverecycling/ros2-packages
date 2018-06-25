@@ -23,7 +23,6 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 
 add_executable(seed ${SOURCES})
-target_link_libraries(seed i2cpp)
 ament_target_dependencies(seed
     "rclcpp"
     "rcutils"

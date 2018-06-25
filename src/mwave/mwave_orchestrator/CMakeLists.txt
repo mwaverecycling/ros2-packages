@@ -17,21 +17,18 @@ find_package(rclcpp REQUIRED)
 find_package(rcutils)
 find_package(mwave_messages REQUIRED)
 
-add_executable(config
-  src/services/mariadb.cpp
-)
+add_executable(config src/services/mariadb.cpp)
 target_link_libraries(config
-  mariadbclientpp
-  mysqlclient
+    mariadbclientpp
+    mysqlclient
 )
 ament_target_dependencies(config
-  "rclcpp"
-  "rcutils"
-  "mwave_messages"
+    "rclcpp"
+    "rcutils"
+    "mwave_messages"
 ) 
 
-install(TARGETS
-config
-DESTINATION lib/${PROJECT_NAME})
+install(TARGETS config
+	DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

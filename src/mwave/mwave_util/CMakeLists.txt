@@ -13,7 +13,6 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclcpp_lifecycle REQUIRED)
 find_package(mwave_messages REQUIRED)
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
@@ -25,7 +24,6 @@ add_library(${PROJECT_NAME} ${SOURCES})
 # Dependents before Dependencies
 ament_target_dependencies(${PROJECT_NAME}
     "rclcpp"
-    "rclcpp_lifecycle"
     "std_msgs"
     "mwave_messages"
 )
@@ -43,7 +41,6 @@ ament_export_libraries(${PROJECT_NAME})
 
 ament_export_dependencies(ament_cmake)
 ament_export_dependencies(rclcpp)
-ament_export_dependencies(rclcpp_lifecycle)
 
 ament_package()
 

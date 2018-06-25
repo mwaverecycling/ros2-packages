@@ -2,10 +2,10 @@
 #define MWAVE_MODULES__IO_COMPONENT_HPP_
 
 #include "mwave_util/components.hpp"
-
 #include "mwave_messages/srv/fetch_io_config.hpp"
-
 #include "i2cbridge/i2cbridge.hpp"
+
+#include "rclcpp/rclcpp.hpp"
 
 namespace mwave_modules
 {

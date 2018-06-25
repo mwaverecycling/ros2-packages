@@ -3,8 +3,6 @@
 
 #include "mwave_modules/io_component.hpp"
 
-#include "rclcpp/rclcpp.hpp"
-
 #include "rcutils/logging_macros.h"
 
 #include <chrono>
