@@ -6,21 +6,24 @@
 
 namespace mwave_util
 {
-    class BroadcastNode : public HandledNode 
+    class BroadcastNode : public HandledNode
     {
-        public: 
+        public:
             using SharedPtr = std::shared_ptr<BroadcastNode>;
 
             explicit BroadcastNode(
-                const std::string& node_name, 
-                const std::string& namespace_ = "", 
+                const std::string & node_name,
+                const std::string & namespace_ = "",
                 bool use_intra_process_comms = false
             );
 
-            virtual std::shared_future<bool> init() override;
+            /**
+             * Runs long-running and ROS-dependent initialization, then broadcasts a ready state
+             */
+            virtual void init() override;
 
         protected:
-            void broadcast(std::string& type, std::string& message);
+            void broadcast(const std::string & type, const std::string & message);
             virtual void on_broadcast(const mwave_messages::msg::Broadcast::SharedPtr msg);
 
         private:

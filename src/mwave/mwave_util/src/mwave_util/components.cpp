@@ -5,20 +5,19 @@
 namespace mwave_util
 {
     BroadcastNode::BroadcastNode(const std::string & node_name, const std::string & namespace_, bool use_intra_process_comms)
-        : HandledNode (node_name, namespace_, use_intra_process_comms)
-    {
-        this->_bpub = this->create_publisher<mwave_messages::msg::Broadcast>("/broadcast");
-        this->_bsub = this->create_subscription<mwave_messages::msg::Broadcast>("/broadcast", std::bind(&BroadcastNode::on_broadcast, this, std::placeholders::_1));
-    }
+        : HandledNode (node_name, namespace_, use_intra_process_comms) {  }
 
-    std::shared_future<bool> BroadcastNode::init()
+    void BroadcastNode::init()
     {
         RCLCPP_INFO(this->get_logger(), "Initializing BroadcastNode '%s'...", this->get_name());
-        this->ready_promise.set_value(true);
-        return this->ready_future;
+
+        this->_bpub = this->create_publisher<mwave_messages::msg::Broadcast>("/broadcast");
+        this->_bsub = this->create_subscription<mwave_messages::msg::Broadcast>("/broadcast", std::bind(&BroadcastNode::on_broadcast, this, std::placeholders::_1));
+
+        this->broadcast("state", "ready");
     }
 
-    void BroadcastNode::broadcast(std::string& type, std::string& message) {
+    void BroadcastNode::broadcast(const std::string & type, const std::string & message) {
         _bmsg->type = type;
         _bmsg->message = message;
         _bpub->publish(_bmsg);

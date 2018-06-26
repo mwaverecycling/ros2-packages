@@ -20,6 +20,8 @@ namespace mwave_modules
 				bool intra_proccess_comms = false
 			);
 
+            virtual void init() override;
+
 		private:
 			rclcpp::Client<mwave_messages::srv::FetchIOConfig>::SharedPtr config_client;
             //I2CBridge::I2CBridge i2cbridge;

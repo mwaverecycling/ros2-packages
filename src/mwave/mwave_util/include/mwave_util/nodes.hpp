@@ -13,18 +13,19 @@ namespace mwave_util
     {
         public:
             using SharedPtr = std::shared_ptr<HandledNode>;
-            
+
             explicit HandledNode(
                 const std::string& node_name, 
                 const std::string& namespace_ = "", 
                 bool use_intra_process_comms = false
             );
-
-            virtual std::shared_future<bool> init();
+            
+            /**
+             * For initializing long-running or ROS-dependent constructors
+             */
+            virtual void init();
 
         protected:
-            std::promise<bool> ready_promise;
-            std::shared_future<bool> ready_future;
     };
 }
 

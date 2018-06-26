@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <string>
+#include <future>
 
 /*
  * The seed node is the node that spawn and executes tasks of any component of a plant board (i.e. raspberrypi).
@@ -18,12 +19,21 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-void parse_config(rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedFuture future, rclcpp::Node::SharedPtr seed_node, rclcpp::executors::SingleThreadedExecutor::SharedPtr exec)
+std::vector<std::future<void>> parse_config(rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedFuture future, rclcpp::Node::SharedPtr seed_node, rclcpp::executors::SingleThreadedExecutor::SharedPtr exec)
 {
+    std::vector<std::future<void>> ret;
+
     std::string node_name(seed_node->get_name());
-    for(std::string type : future.get()->nodes)
+    RCLCPP_INFO(seed_node->get_logger(), "Received configuration for '%s'", seed_node->get_name());
+    std::vector<std::string> node_types = future.get()->nodes;
+    for(std::string type : node_types)
+    //std::vector<std::string>::iterator type_itr;
+    //for(type_itr = node_types.begin(); type_itr != node_types.end(); type_itr++)
     {
+        //std::string type = *type_itr;
+        RCLCPP_INFO(seed_node->get_logger(), "Component needed: %s", type.c_str());
         mwave_util::BroadcastNode::SharedPtr component_node;
+
         if (type == "ion") {
             component_node = std::make_shared<mwave_modules::IOComponent>(node_name + "_ion");
         } else if (type == "log") {
@@ -31,10 +41,17 @@ void parse_config(rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedFu
         } else if (type == "hmi") {
             component_node = std::make_shared<mwave_modules::HMIComponent>(node_name + "_hmi");
         }
+
         exec->add_node(component_node);
-        component_node->init();
+    	ret.push_back(std::async(std::launch::async, [](mwave_util::BroadcastNode::SharedPtr nod) -> void { nod->init(); }, component_node));
     }
-    exec->remove_node(seed_node);
+    if(node_types.size() > 0) {
+        RCLCPP_INFO(seed_node->get_logger(), "'%s' configured!", seed_node->get_name());
+        exec->remove_node(seed_node);
+    }
+    else { RCLCPP_WARN(seed_node->get_logger(), "There were no components for node '%s'", seed_node->get_name()); }
+
+    return ret;
 }
 
 int main(int argc, char * argv[])
@@ -50,6 +67,7 @@ int main(int argc, char * argv[])
     // TODO: Make this a mutlithreaded executor
     auto exec = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
     auto seed_node = std::make_shared<rclcpp::Node>(name);
+    RCLCPP_INFO(seed_node->get_logger(), "Fetching configuration for '%s'", seed_node->get_name());
     // Get config for exec
     // spin till future
 
@@ -61,7 +79,7 @@ int main(int argc, char * argv[])
 
     //(void)config_client->async_send_request(config_request, std::bind(parse_config, std::placeholders::_1, seed_node, exec));
     (void)config_client->async_send_request(config_request, [seed_node, exec](rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedFuture future) -> void {
-        parse_config(future, seed_node, exec);
+        (void)parse_config(future, seed_node, exec);
     });
 
     exec->add_node(seed_node);
