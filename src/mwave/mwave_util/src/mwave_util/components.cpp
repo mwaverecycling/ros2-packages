@@ -9,9 +9,13 @@ namespace mwave_util
     {
         this->_bpub = this->create_publisher<mwave_messages::msg::Broadcast>("/broadcast");
         this->_bsub = this->create_subscription<mwave_messages::msg::Broadcast>("/broadcast", std::bind(&BroadcastNode::on_broadcast, this, std::placeholders::_1));
-        //this->_bsub = this->create_subscription<mwave_messages::msg::Broadcast>("/broadcast", [this](const mwave_messages::msg::Broadcast::SharedPtr msg) -> void {
-        //    this->on_broadcast(msg);
-        //});
+    }
+
+    std::shared_future<bool> BroadcastNode::init()
+    {
+        RCLCPP_INFO(this->get_logger(), "Initializing BroadcastNode '%s'...", this->get_name());
+        this->ready_promise.set_value(true);
+        return this->ready_future;
     }
 
     void BroadcastNode::broadcast(std::string& type, std::string& message) {

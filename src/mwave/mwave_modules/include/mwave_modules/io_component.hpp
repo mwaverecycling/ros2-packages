@@ -22,7 +22,7 @@ namespace mwave_modules
 
 		private:
 			rclcpp::Client<mwave_messages::srv::FetchIOConfig>::SharedPtr config_client;
-            I2CBridge::I2CBridge i2cbridge;
+            //I2CBridge::I2CBridge i2cbridge;
 	};
 } //namespace mwave_module
 #endif //MWAVE_MODULES__IO_COMPONENT_HPP_
