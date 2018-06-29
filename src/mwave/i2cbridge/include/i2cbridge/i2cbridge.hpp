@@ -7,7 +7,7 @@
 #include "rclcpp/rclcpp.hpp"
 
 #include "mwave_messages/msg/i2_c_device.hpp"
-#include "i2cbridge/devices/pca9555.hpp"
+#include "i2cbridge/devices/pca9555bridge.hpp"
 #include "i2cpp/device.hpp"
 
 namespace I2CBridge

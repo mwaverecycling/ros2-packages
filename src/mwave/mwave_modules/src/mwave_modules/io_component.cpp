@@ -31,7 +31,7 @@ namespace mwave_modules
 
         /* Configure I2C Devices */
         for (mwave_messages::msg::I2CDevice device : result->devices) {
-            //this->i2cbridge.configureDevice(device, this);
+            this->i2cbridge.configureDevice(device, this);
         }
 
         this->broadcast("state", "ready");

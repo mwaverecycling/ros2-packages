@@ -11,9 +11,9 @@ namespace mwave_modules
 {
 	class IOComponent : public mwave_util::BroadcastNode
 	{
-		public: 
+		public:
 			using SharedPtr = std::shared_ptr<IOComponent>;
-	
+
 			explicit IOComponent(
 				const std::string & node_name,
 				const std::string & namespace_ = "",
@@ -24,7 +24,7 @@ namespace mwave_modules
 
 		private:
 			rclcpp::Client<mwave_messages::srv::FetchIOConfig>::SharedPtr config_client;
-            //I2CBridge::I2CBridge i2cbridge;
+            I2CBridge::I2CBridge i2cbridge;
 	};
 } //namespace mwave_module
 #endif //MWAVE_MODULES__IO_COMPONENT_HPP_

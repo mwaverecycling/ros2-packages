@@ -1,4 +1,4 @@
-#include "i2cbridge/devices/pca9555.hpp"
+#include "i2cbridge/devices/pca9555bridge.hpp"
 
 #include <map>
 #include <chrono>
@@ -31,7 +31,7 @@ namespace I2CBridge
         }
 
         this->device_ref->set_state(~(this->device_ref->read_input()));
-        
+
         // Default Sample Rate is 10 Hz
         uint_fast16_t sample_freq = config.frequency == 0 ? 10 : config.frequency;
         int_fast64_t sample_rate = int_fast64_t((double(1) / sample_freq) * 1000);

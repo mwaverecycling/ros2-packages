@@ -11,6 +11,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 endif()
 
+message("Looking in '${CMAKE_CURRENT_LIST_DIR}'")
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rcutils)
@@ -19,6 +20,7 @@ find_package(mwave_util REQUIRED)
 find_package(i2cbridge REQUIRED)
 
 include_directories("include")
+include_directories("${i2cbridge_INCLUDE_DIRS}")
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 
@@ -29,6 +31,9 @@ ament_target_dependencies(seed
     "std_msgs"
     "mwave_util"
     "i2cbridge")
+target_link_libraries(seed
+    ${i2cbridge_LIBRARIES})
+
 install(TARGETS seed
     DESTINATION lib/${PROJECT_NAME})
 
