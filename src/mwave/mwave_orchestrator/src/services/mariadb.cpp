@@ -69,7 +69,7 @@ class OrchestratorConfigNode : public rclcpp::Node
 		        response->error = "";
             };
             //A callback function for when nodes configure thier input and output devices. (Message Type: FetchIOConfig)
-            auto handle_fetch_io_config = 
+            auto handle_fetch_io_config =
                 [this](const std::shared_ptr<rmw_request_id_t> request_header,
                        const std::shared_ptr<mwave_messages::srv::FetchIOConfig::Request> request,
                        std::shared_ptr<mwave_messages::srv::FetchIOConfig::Response> response) -> void
@@ -100,28 +100,28 @@ class OrchestratorConfigNode : public rclcpp::Node
                 }
 
                 response->devices = ret_devices;
-            }; 
+            };
             //A callback function for when nodes configure their HMI(s) (Message Type: FetchHMIConfig)
-            auto handle_fetch_hmi_config = 
+            auto handle_fetch_hmi_config =
                 [this](const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<mwave_messages::srv::FetchHMIConfig::Request> request, std::shared_ptr<mwave_messages::srv::FetchHMIConfig::Response> response) -> void
                 {
                     (void)request_header;
                     (void)request;
                     response->dummy_response = "Dummy Response.";
-                };            
+                };
             //A callback function for when nodes configure their logic modules (Message Type: FetchLogicConfig)
-            auto handle_fetch_logic_config = 
+            auto handle_fetch_logic_config =
                 [this](const std::shared_ptr<rmw_request_id_t> request_header, const std::shared_ptr<mwave_messages::srv::FetchLogicConfig::Request> request, std::shared_ptr<mwave_messages::srv::FetchLogicConfig::Response> response) -> void
                 {
                     (void)request_header;
                     (void)request;
                     response->dummy_response = "Dummy Response.";
-                };            
-            
+                };
+
             srv_fetch_config_type = create_service<mwave_messages::srv::FetchConfigType>("/FetchConfigType", handle_fetch_config_type);
-            srv_fetch_io_config = create_service<mwave_messages::srv::FetchIOConfig>("FetchIOConfig", handle_fetch_io_config);
-            srv_fetch_hmi_config = create_service<mwave_messages::srv::FetchHMIConfig>("FetchHMIConfig", handle_fetch_hmi_config);
-            srv_fetch_logic_config = create_service<mwave_messages::srv::FetchLogicConfig>("FetchLogicConfig", handle_fetch_logic_config);
+            srv_fetch_io_config = create_service<mwave_messages::srv::FetchIOConfig>("/FetchIOConfig", handle_fetch_io_config);
+            srv_fetch_hmi_config = create_service<mwave_messages::srv::FetchHMIConfig>("/FetchHMIConfig", handle_fetch_hmi_config);
+            srv_fetch_logic_config = create_service<mwave_messages::srv::FetchLogicConfig>("/FetchLogicConfig", handle_fetch_logic_config);
 
             RCLCPP_INFO(this->get_logger(), "Listening!");
         };
@@ -168,13 +168,13 @@ int main(int argc, char* argv[])
     // This ensures a correct sync of all prints
     // even when exectued simultaneously within the launch file.
     setvbuf(stdout, NULL, _IONBF, BUFSIZ);
-    
+
     rclcpp::init(argc, argv);
-    
+
     auto node = std::make_shared<OrchestratorConfigNode>();
-    
+
     rclcpp::spin(node);
-    
+
     rclcpp::shutdown();
 
     return 0;

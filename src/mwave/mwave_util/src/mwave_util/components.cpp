@@ -19,6 +19,7 @@ namespace mwave_util
 
     void BroadcastNode::broadcast(const std::string & type, const std::string & message) {
         _bmsg->type = type;
+        _bmsg->name = std::string(this.get_name());
         _bmsg->message = message;
         _bpub->publish(_bmsg);
     }
