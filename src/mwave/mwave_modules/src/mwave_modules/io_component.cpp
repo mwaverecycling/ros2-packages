@@ -27,7 +27,9 @@ namespace mwave_modules
         }
         auto config_request = std::make_shared<mwave_messages::srv::FetchIOConfig::Request>();
         config_request->node = this->get_name(); // TODO: Change database to recognize <name>_ion
-        auto result = config_client->async_send_request(config_request).get();
+        auto future = config_client->async_send_request(config_request);
+        RCLCPP_INFO(this->get_logger(), "Waiting for request response.");
+        auto result = future.get();
 
         /* Configure I2C Devices */
         for (mwave_messages::msg::I2CDevice device : result->devices) {
