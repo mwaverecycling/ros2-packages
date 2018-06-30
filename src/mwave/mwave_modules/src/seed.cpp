@@ -100,7 +100,7 @@ int main(int argc, char * argv[])
     rclcpp::init(argc, argv);
 
     // TODO: Create a config file for plant module name
-    std::string name = "testall";
+    std::string name = "testi2c";
 
     auto seed_node = std::make_shared<rclcpp::Node>(name);
 

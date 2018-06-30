@@ -54,15 +54,26 @@ class OrchestratorConfigNode : public rclcpp::Node
             {
                 (void)request_header;
                 RCLCPP_INFO(this->get_logger(), "Request of type for node: %s", request->node_name.c_str());
+
                 // Get types from node_types
                 query_node_types->set_string(0, request->node_name);
                 auto sql_result = query_node_types->query();
+
                 // Populate ret_nodes with type names
                 std::vector<std::string> ret_nodes = std::vector<std::string>();
+
                 while (sql_result->next()) {
                     std::string type_name = sql_result->get_string("type");
                     RCLCPP_INFO(this->get_logger(), "Types: %s", type_name.c_str());
                     ret_nodes.push_back(type_name);
+                }
+
+                // Reject if the node is not mentioned in this table
+                if (ret_nodes.size() == 0) {
+                    RCLCPP_WARN(this->get_logger(), "No node named %s is configured for this network.", request->node_name.c_str());
+                    response->nodes = ret_nodes;
+                    response->error = std::string("No node named ") + request->node_name.c_str() + " is configured for this network.";
+                    return;
                 }
 
                 response->nodes = ret_nodes;
@@ -76,8 +87,10 @@ class OrchestratorConfigNode : public rclcpp::Node
             {
                 (void)request_header;
                 RCLCPP_INFO(this->get_logger(), "Request of input/output for node: %s", request->node.c_str());
+                // Parse plant module name "compactor_ion" to "compactor"
+                std::string node_name = parseName(request->node);
                 // Get bus, address, device, option_keys, and option_values from i2c_config table
-                query_config_i2c->set_string(0, request->node);
+                query_config_i2c->set_string(0, node_name);
                 auto sql_result = query_config_i2c->query();
                 // Populate transient object with data from i2c_config
                 std::vector<mwave_messages::msg::I2CDevice> ret_devices;
@@ -88,17 +101,16 @@ class OrchestratorConfigNode : public rclcpp::Node
                 // Construct the response from the transient objects
                 std::vector<mwave_messages::msg::I2CDevice>::iterator itr;
                 for(itr = ret_devices.begin(); itr != ret_devices.end(); itr++) {
-                    query_topics_i2c->set_string(0, request->node);
+                    query_topics_i2c->set_string(0, node_name);
                     query_topics_i2c->set_unsigned8(1, itr->bus);
                     query_topics_i2c->set_unsigned8(2, itr->address);
                     // Reassign sql_result to table i2c_topics matching name, bus, and address
                     sql_result = query_topics_i2c->query();
                     itr->topics.resize(sql_result->row_count());
                     while(sql_result->next()) {
-                        itr->topics.at(sql_result->get_unsigned8("pin")) = sql_result->get_string("slug");
+                        itr->topics.at(sql_result->get_unsigned8("pin")) = sql_result->get_string("topic");
                     }
                 }
-
                 response->devices = ret_devices;
             };
             //A callback function for when nodes configure their HMI(s) (Message Type: FetchHMIConfig)
@@ -125,6 +137,14 @@ class OrchestratorConfigNode : public rclcpp::Node
 
             RCLCPP_INFO(this->get_logger(), "Listening!");
         };
+        /*
+         * Given a component's name (e.g. "compactor_ion") this returns the parent node name (e.g. "compactor")
+         */
+        std::string parseName(const std::string full_name) {
+            std::string delimiter = "_";
+            std::string token = full_name.substr(0, full_name.find(delimiter));
+            return token;
+        }
 
         /*
          * Given a result set from the table i2c_config, this method will return a parsed version as a (I2CDevice) message.
