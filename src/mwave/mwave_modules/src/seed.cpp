@@ -43,7 +43,7 @@ std::vector<std::future<void>> parse_config(rclcpp::Client<mwave_messages::srv::
         }
 
         exec->add_node(component_node);
-    	ret.push_back(std::async(std::launch::async, [](mwave_util::BroadcastNode::SharedPtr nod) -> void { nod->init(); }, component_node));
+    	//ret.push_back(std::async(std::launch::async, [](mwave_util::BroadcastNode::SharedPtr nod) -> void { nod->init(); }, component_node));
     }
     if(node_types.size() > 0) {
         RCLCPP_INFO(seed_node->get_logger(), "'%s' configured!", seed_node->get_name());
