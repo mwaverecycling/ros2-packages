@@ -19,9 +19,9 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-std::vector<std::future<void>> parse_config(rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedFuture future, rclcpp::Node::SharedPtr seed_node, rclcpp::executor::Executor::SharedPtr exec)
+void parse_config(rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedFuture future, rclcpp::Node::SharedPtr seed_node, rclcpp::executor::Executor::SharedPtr exec)
 {
-    std::vector<std::future<void>> ret;
+    //std::vector<std::future<void>> ret;
 
     std::string node_name(seed_node->get_name());
     RCLCPP_INFO(seed_node->get_logger(), "Received configuration for '%s'", seed_node->get_name());
@@ -51,7 +51,45 @@ std::vector<std::future<void>> parse_config(rclcpp::Client<mwave_messages::srv::
     }
     else { RCLCPP_WARN(seed_node->get_logger(), "There were no components for node '%s'", seed_node->get_name()); }
 
-    return ret;
+    //return ret;
+}
+
+void config_script (rclcpp::Node::SharedPtr node, rclcpp::executor::Executor::SharedPtr exec) {
+    rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedPtr config_client =
+        node->create_client<mwave_messages::srv::FetchConfigType>("/FetchConfigType");
+
+    auto config_request = std::make_shared<mwave_messages::srv::FetchConfigType::Request>();
+    std::string name(node->get_name());
+    config_request->node_name = name;
+
+    auto future = config_client->async_send_request(config_request);
+
+    std::vector<std::string> node_types = future.get()->nodes;
+
+    for(std::string type : node_types)
+    //std::vector<std::string>::iterator type_itr;
+    //for(type_itr = node_types.begin(); type_itr != node_types.end(); type_itr++)
+    {
+        //std::string type = *type_itr;
+        RCLCPP_INFO(node->get_logger(), "Component needed: %s", type.c_str());
+        mwave_util::BroadcastNode::SharedPtr component_node;
+
+        if (type == "ion") {
+            component_node = std::make_shared<mwave_modules::IOComponent>(name + "_ion");
+        } else if (type == "log") {
+            component_node = std::make_shared<mwave_modules::LogicComponent>(name + "_log");
+        } else if (type == "hmi") {
+            component_node = std::make_shared<mwave_modules::HMIComponent>(name + "_hmi");
+        }
+
+        exec->add_node(component_node);
+        component_node->init();
+    }
+    if(node_types.size() > 0) {
+        RCLCPP_INFO(node->get_logger(), "'%s' configured!", node->get_name());
+        exec->remove_node(node);
+    }
+    else { RCLCPP_WARN(node->get_logger(), "There were no components for node '%s'", node->get_name()); }
 }
 
 int main(int argc, char * argv[])
@@ -64,12 +102,21 @@ int main(int argc, char * argv[])
     // TODO: Create a config file for plant module name
     std::string name = "testall";
 
+    auto seed_node = std::make_shared<rclcpp::Node>(name);
+
+    auto exec = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+
+    std::shared_future<void> script = std::async(std::launch::async, std::bind(config_script, seed_node, exec));
+
+    rclcpp::spin_until_future_complete(seed_node, script);
+
+    exec->spin();
+    /*
     // TODO: Make this a mutlithreaded executor
     auto exec = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+
     auto seed_node = std::make_shared<rclcpp::Node>(name);
     RCLCPP_INFO(seed_node->get_logger(), "Fetching configuration for '%s'", seed_node->get_name());
-    // Get config for exec
-    // spin till future
 
     rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedPtr config_client =
                 seed_node->create_client<mwave_messages::srv::FetchConfigType>("/FetchConfigType");
@@ -84,6 +131,8 @@ int main(int argc, char * argv[])
 
     exec->add_node(seed_node);
     exec->spin();
+    */
+
     rclcpp::shutdown();
 
     return 0;
