@@ -6,6 +6,7 @@
 #include "rcutils/logging_macros.h"
 
 #include <chrono>
+#include <future>
 
 
 namespace mwave_modules
@@ -26,9 +27,21 @@ namespace mwave_modules
             return;
         }
         auto config_request = std::make_shared<mwave_messages::srv::FetchIOConfig::Request>();
-        config_request->node = this->get_name(); // TODO: Change database to recognize <name>_ion
+        config_request->node = this->get_name();
         auto future = config_client->async_send_request(config_request);
-        RCLCPP_INFO(this->get_logger(), "Waiting for request response.");
+        RCLCPP_INFO(this->get_logger(), "Waiting for future...");
+        auto status = future.wait_for(std::chrono::duration<int64_t, std::ratio<1, 1>>(5));
+        switch (status) {
+            case std::future_status::deferred :
+                RCLCPP_INFO(this->get_logger(), "Haven't sent request... yest");
+                return;
+            case std::future_status::ready :
+                RCLCPP_INFO(this->get_logger(), "Response received");
+                break;
+            case std::future_status::timeout :
+                RCLCPP_ERROR(this->get_logger(), "Service Timeout!!");
+                return;
+        }
         auto result = future.get();
 
         /* Configure I2C Devices */

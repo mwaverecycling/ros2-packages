@@ -104,7 +104,7 @@ int main(int argc, char * argv[])
 
     auto seed_node = std::make_shared<rclcpp::Node>(name);
 
-    auto exec = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+    auto exec = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
 
     std::shared_future<void> script = std::async(std::launch::async, std::bind(config_script, seed_node, exec));
 
