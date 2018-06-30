@@ -19,7 +19,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-std::vector<std::future<void>> parse_config(rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedFuture future, rclcpp::Node::SharedPtr seed_node, rclcpp::executors::SingleThreadedExecutor::SharedPtr exec)
+std::vector<std::future<void>> parse_config(rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedFuture future, rclcpp::Node::SharedPtr seed_node, rclcpp::executor::Executor::SharedPtr exec)
 {
     std::vector<std::future<void>> ret;
 
@@ -65,7 +65,7 @@ int main(int argc, char * argv[])
     std::string name = "testall";
 
     // TODO: Make this a mutlithreaded executor
-    auto exec = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
+    auto exec = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
     auto seed_node = std::make_shared<rclcpp::Node>(name);
     RCLCPP_INFO(seed_node->get_logger(), "Fetching configuration for '%s'", seed_node->get_name());
     // Get config for exec
