@@ -62,6 +62,8 @@ std::vector<mwave_util::BroadcastNode::SharedPtr> config_script (rclcpp::Node::S
     std::string name(node->get_name());
     config_request->node_name = name;
 
+    rclcpp::spin_some(node);
+
     auto future = config_client->async_send_request(config_request);
 
     std::vector<std::string> node_types = future.get()->nodes;
