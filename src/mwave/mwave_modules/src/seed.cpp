@@ -89,6 +89,7 @@ std::vector<mwave_util::BroadcastNode::SharedPtr> config_script (rclcpp::Node::S
         RCLCPP_INFO(node->get_logger(), "'%s' configured!", node->get_name());
     }
     else { RCLCPP_WARN(node->get_logger(), "There were no components for node '%s'", node->get_name()); }
+    return ret_nodes;
 }
 
 int main(int argc, char * argv[])
