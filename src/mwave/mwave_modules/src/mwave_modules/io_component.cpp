@@ -22,11 +22,11 @@ namespace mwave_modules
         this->config_client = this->create_client<mwave_messages::srv::FetchIOConfig>("/FetchIOConfig");
         // Allow the orchestrator 30 seconds to be avalible as all modules will be coming online together.
 
-        /*if(!this->config_client->wait_for_service(std::chrono::duration<int64_t, std::ratio<1, 1>>(30)))
+        if(!this->config_client->wait_for_service(std::chrono::duration<int64_t, std::ratio<1, 1>>(30)))
         {
             RCLCPP_WARN(this->get_logger(), "Configuration service not avalible after waiting");
             return;
-        }*/
+        }
         auto config_request = std::make_shared<mwave_messages::srv::FetchIOConfig::Request>();
         config_request->node = std::string(this->get_name());
 
