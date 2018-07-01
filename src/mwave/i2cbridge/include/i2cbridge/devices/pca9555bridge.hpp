@@ -31,6 +31,7 @@ namespace I2CBridge
 			uint_fast16_t config_mask;
             uint_fast16_t prev_state;
 			i2cpp::PCA9555::SharedPtr device_ref;
+            rclcpp::Node* node_ref;
 
 			std::vector<rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr> pubs;
 			std::vector<rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr> subs;

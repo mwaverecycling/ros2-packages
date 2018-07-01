@@ -17,6 +17,7 @@ namespace I2CBridge
             : (std::stoul(options.at("mask"), 0, 16) & 0xffff);
         this->device_ref = std::make_shared<::i2cpp::PCA9555>(int(config.bus), uint_fast8_t(config.address));
         this->device_ref->write_config(this->config_mask);
+        this->node_ref = node;
 
         uint_fast8_t i = 0;
         for(i = 0; i < config.topics.size(); i++)
@@ -68,6 +69,9 @@ namespace I2CBridge
     void PCA9555Bridge::input_callback()
     {
         uint_fast16_t result = this->device_ref->read_input();
+        if(result != this->prev_state) {
+            RCLCPP_INFO(this->node_ref->get_logger(), "  PCA9555 change! %04x -> %04x", this->prev_state, result);
+        }
         uint_fast8_t i;
         for(i = 0; i < 16; i++)
         {
