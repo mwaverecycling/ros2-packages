@@ -82,7 +82,7 @@ void config_script (rclcpp::Node::SharedPtr node, rclcpp::executor::Executor::Sh
             component_node = std::make_shared<mwave_modules::HMIComponent>(name + "_hmi");
         }
 
-        exec->add_node(component_node);
+        //exec->add_node(component_node);
         component_node->init();
     }
     if(node_types.size() > 0) {
