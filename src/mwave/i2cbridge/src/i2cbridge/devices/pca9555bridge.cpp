@@ -24,9 +24,9 @@ namespace I2CBridge
             if(config.topics[i].length() == 0) { continue; }
             // Check if Input Pin
             if((this->config_mask & (1 << i)) == 0) {
-                this->configure_input_pin(i, config.topics[i], node);
-            } else {
                 this->configure_output_pin(i, config.topics[i], node);
+            } else {
+                this->configure_input_pin(i, config.topics[i], node);
             }
         }
 
@@ -35,6 +35,7 @@ namespace I2CBridge
         // Default Sample Rate is 10 Hz
         uint_fast16_t sample_freq = config.frequency == 0 ? 10 : config.frequency;
         int_fast64_t sample_rate = int_fast64_t((double(1) / sample_freq) * 1000);
+        RCLCPP_INFO(node->get_logger(), "Sampling at %dHz", sample_rate);
         this->timer = node->create_wall_timer(std::chrono::duration<int_fast64_t, std::ratio<1, 1000000>>(sample_rate),
             std::bind(&PCA9555Bridge::input_callback, this));
     }
@@ -68,7 +69,7 @@ namespace I2CBridge
         uint_fast8_t i;
         for(i = 0; i < 16; i++)
         {
-            if((this->config_mask & (1 << i)) == 0)
+            if((this->config_mask & (1 << i)) > 0)
             {
                 if((prev & (1 << i)) != (result & (1 << i))) {
                     auto msg = std::make_shared<std_msgs::msg::Bool>();
