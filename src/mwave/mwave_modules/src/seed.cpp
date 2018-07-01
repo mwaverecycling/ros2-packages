@@ -54,7 +54,7 @@ void parse_config(rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedFu
     //return ret;
 }
 
-void config_script (rclcpp::Node::SharedPtr node, rclcpp::executor::Executor::SharedPtr exec) {
+std::vector<mwave_util::BroadcastNode::SharedPtr> config_script (rclcpp::Node::SharedPtr node) {
     rclcpp::Client<mwave_messages::srv::FetchConfigType>::SharedPtr config_client =
         node->create_client<mwave_messages::srv::FetchConfigType>("/FetchConfigType");
 
@@ -65,6 +65,7 @@ void config_script (rclcpp::Node::SharedPtr node, rclcpp::executor::Executor::Sh
     auto future = config_client->async_send_request(config_request);
 
     std::vector<std::string> node_types = future.get()->nodes;
+    std::vector<mwave_util::BroadcastNode::SharedPtr> ret_nodes;
 
     for(std::string type : node_types)
     //std::vector<std::string>::iterator type_itr;
@@ -82,12 +83,10 @@ void config_script (rclcpp::Node::SharedPtr node, rclcpp::executor::Executor::Sh
             component_node = std::make_shared<mwave_modules::HMIComponent>(name + "_hmi");
         }
 
-        //exec->add_node(component_node);
-        component_node->init();
+        ret_nodes.push_back(component_node);
     }
-    if(node_types.size() > 0) {
+    if(node_types.size() > 0 && node_types.size() == ret_nodes.size()) {
         RCLCPP_INFO(node->get_logger(), "'%s' configured!", node->get_name());
-        exec->remove_node(node);
     }
     else { RCLCPP_WARN(node->get_logger(), "There were no components for node '%s'", node->get_name()); }
 }
@@ -106,9 +105,16 @@ int main(int argc, char * argv[])
 
     auto exec = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
 
-    std::shared_future<void> script = std::async(std::launch::async, std::bind(config_script, seed_node, exec));
+    //std::shared_future<void> script = std::async(std::launch::async, std::bind(config_script, seed_node, exec));
 
-    rclcpp::spin_until_future_complete(seed_node, script);
+    //rclcpp::spin_until_future_complete(seed_node, script);
+
+    auto component_nodes = config_script(seed_node);
+    for(auto cnode : component_nodes)
+    {
+        cnode->init();
+        exec->add_node(cnode);
+    }
 
     exec->spin();
     /*
