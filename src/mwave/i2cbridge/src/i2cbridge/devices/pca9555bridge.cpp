@@ -36,7 +36,7 @@ namespace I2CBridge
         uint_fast16_t sample_freq = config.frequency == 0 ? 10 : config.frequency;
         int_fast64_t sample_rate = int_fast64_t((double(1) / sample_freq) * 1000);
         RCLCPP_INFO(node->get_logger(), "Sampling at %dHz", sample_rate);
-        this->timer = node->create_wall_timer(std::chrono::duration<int_fast64_t, std::ratio<1, 1000000>>(sample_rate),
+        this->timer = node->create_wall_timer(std::chrono::duration<int_fast64_t, std::ratio<1, 1000>>(sample_rate),
             std::bind(&PCA9555Bridge::input_callback, this));
     }
 
