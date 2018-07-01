@@ -29,6 +29,7 @@ namespace I2CBridge
 		private:
 			uint_fast8_t input_pin_map[16];
 			uint_fast16_t config_mask;
+            uint_fast16_t prev_state;
 			i2cpp::PCA9555::SharedPtr device_ref;
 
 			std::vector<rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr> pubs;

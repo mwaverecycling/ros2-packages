@@ -30,7 +30,7 @@ namespace I2CBridge
             }
         }
 
-        this->device_ref->set_state(~(this->device_ref->read_input()));
+        this->prev_state = ~(this->device_ref->read_input());
 
         // Default Sample Rate is 10 Hz
         uint_fast16_t sample_freq = config.frequency == 0 ? 10 : config.frequency;
@@ -64,20 +64,19 @@ namespace I2CBridge
     }
     void PCA9555Bridge::input_callback()
     {
-        uint_fast16_t prev = this->device_ref->get_state();
         uint_fast16_t result = this->device_ref->read_input();
         uint_fast8_t i;
         for(i = 0; i < 16; i++)
         {
             if((this->config_mask & (1 << i)) > 0)
             {
-                if((prev & (1 << i)) != (result & (1 << i))) {
+                if((this->prev_state & (1 << i)) != (result & (1 << i))) {
                     auto msg = std::make_shared<std_msgs::msg::Bool>();
                     msg->data = (result & (1 << i)) > 0;
                     this->pubs[this->input_pin_map[i]]->publish(msg);
                 }
             }
         }
-        this->device_ref->set_state(result);
+        this->prev_state = result;
     }
 }
