@@ -20,7 +20,7 @@ namespace mwave_util
             /**
              * Runs long-running and ROS-dependent initialization, then broadcasts a ready state
              */
-            virtual void init() override;
+            virtual void init(rclcpp::executor::Executor::SharedPtr exec) override;
 
         protected:
             void broadcast(const std::string & type, const std::string & message);

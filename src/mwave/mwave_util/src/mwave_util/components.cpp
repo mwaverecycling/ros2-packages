@@ -7,7 +7,7 @@ namespace mwave_util
     BroadcastNode::BroadcastNode(const std::string & node_name, const std::string & namespace_, bool use_intra_process_comms)
         : HandledNode (node_name, namespace_, use_intra_process_comms) {  }
 
-    void BroadcastNode::init()
+    void BroadcastNode::init(rclcpp::executor::Executor::SharedPtr exec)
     {
         RCLCPP_INFO(this->get_logger(), "Initializing BroadcastNode '%s'...", this->get_name());
 

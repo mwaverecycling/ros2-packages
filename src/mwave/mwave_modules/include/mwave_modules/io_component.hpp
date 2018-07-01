@@ -20,7 +20,7 @@ namespace mwave_modules
 				bool intra_proccess_comms = false
 			);
 
-            virtual void init() override;
+            virtual void init(rclcpp::executor::Executor::SharedPtr exec) override;
 
 		private:
 			rclcpp::Client<mwave_messages::srv::FetchIOConfig>::SharedPtr config_client;

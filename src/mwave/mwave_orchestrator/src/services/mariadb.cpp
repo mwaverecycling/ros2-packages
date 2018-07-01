@@ -106,6 +106,7 @@ class OrchestratorConfigNode : public rclcpp::Node
                     query_topics_i2c->set_unsigned8(2, itr->address);
                     // Reassign sql_result to table i2c_topics matching name, bus, and address
                     sql_result = query_topics_i2c->query();
+
                     itr->topics.resize(sql_result->row_count());
                     while(sql_result->next()) {
                         itr->topics.at(sql_result->get_unsigned8("pin")) = sql_result->get_string("topic");

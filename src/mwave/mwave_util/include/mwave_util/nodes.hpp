@@ -15,15 +15,15 @@ namespace mwave_util
             using SharedPtr = std::shared_ptr<HandledNode>;
 
             explicit HandledNode(
-                const std::string& node_name, 
-                const std::string& namespace_ = "", 
+                const std::string& node_name,
+                const std::string& namespace_ = "",
                 bool use_intra_process_comms = false
             );
-            
+
             /**
              * For initializing long-running or ROS-dependent constructors
              */
-            virtual void init();
+            virtual void init(rclcpp::executor::Executor::SharedPtr exec);
 
         protected:
     };

@@ -62,9 +62,9 @@ std::vector<mwave_util::BroadcastNode::SharedPtr> config_script (rclcpp::Node::S
     std::string name(node->get_name());
     config_request->node_name = name;
 
-    rclcpp::spin_some(node);
-
     auto future = config_client->async_send_request(config_request);
+
+    rclcpp::spin_until_future_complete(node, future);
 
     std::vector<std::string> node_types = future.get()->nodes;
     std::vector<mwave_util::BroadcastNode::SharedPtr> ret_nodes;
@@ -106,7 +106,7 @@ int main(int argc, char * argv[])
 
     auto seed_node = std::make_shared<rclcpp::Node>(name);
 
-    auto exec = std::make_shared<rclcpp::executors::MultiThreadedExecutor>();
+    auto exec = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
 
     //std::shared_future<void> script = std::async(std::launch::async, std::bind(config_script, seed_node, exec));
 
@@ -115,9 +115,10 @@ int main(int argc, char * argv[])
     auto component_nodes = config_script(seed_node);
     for(auto cnode : component_nodes)
     {
-        cnode->init();
         exec->add_node(cnode);
+        cnode->init(exec);
     }
+
 
     exec->spin();
     /*
