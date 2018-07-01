@@ -59,5 +59,7 @@ namespace mwave_modules
         }
         RCLCPP_INFO(this->get_logger(), "Init complete!");
         this->broadcast("state", "ready");
+
+        RCLCPP_INFO(this->get_logger(), "Init complete!");
     }
 } // namespace mwave_modules
