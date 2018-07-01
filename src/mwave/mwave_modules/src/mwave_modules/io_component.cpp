@@ -27,9 +27,10 @@ namespace mwave_modules
             return;
         }
         auto config_request = std::make_shared<mwave_messages::srv::FetchIOConfig::Request>();
-        config_request->node = this->get_name();
+        config_request->node = std::string(this->get_name());
         auto future = config_client->async_send_request(config_request);
         RCLCPP_INFO(this->get_logger(), "Waiting for future...");
+        /*
         auto status = future.wait_for(std::chrono::duration<int64_t, std::ratio<1, 1>>(5));
         switch (status) {
             case std::future_status::deferred :
@@ -43,9 +44,11 @@ namespace mwave_modules
                 return;
         }
         auto result = future.get();
-
+        */
         /* Configure I2C Devices */
-        for (mwave_messages::msg::I2CDevice device : result->devices) {
+        auto devices = future.get()->devices;
+        for (mwave_messages::msg::I2CDevice device : devices) {
+        //for (mwave_messages::msg::I2CDevice device : result->devices) {
             RCLCPP_INFO(this->get_logger(), "Configuring %s device.", device.device);
             this->i2cbridge.configureDevice(device, this);
         }

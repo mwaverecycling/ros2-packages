@@ -112,6 +112,7 @@ class OrchestratorConfigNode : public rclcpp::Node
                     }
                 }
                 response->devices = ret_devices;
+                RCLCPP_INFO(this->get_logger(), "Response sent!");
             };
             //A callback function for when nodes configure their HMI(s) (Message Type: FetchHMIConfig)
             auto handle_fetch_hmi_config =
