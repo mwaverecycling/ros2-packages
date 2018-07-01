@@ -30,7 +30,6 @@ namespace mwave_modules
         auto config_request = std::make_shared<mwave_messages::srv::FetchIOConfig::Request>();
         config_request->node = std::string(this->get_name());
 
-        RCLCPP_INFO(this->get_logger(), "Waiting for future...");
         auto future = config_client->async_send_request(config_request);
         //rclcpp::spin_until_future_complete(Node::shared_from_this(), future);
         exec->spin_until_future_complete(future);
@@ -54,12 +53,9 @@ namespace mwave_modules
         auto devices = future.get()->devices;
         std::vector<mwave_messages::msg::I2CDevice>::iterator itr;
         for(itr = devices.begin(); itr != devices.end(); itr++) {
-            RCLCPP_INFO(this->get_logger(), "Configuring %s device.", itr->device.c_str());
+            RCLCPP_INFO(this->get_logger(), "\tConfiguring %s device.", itr->device.c_str());
             this->i2cbridge.configureDevice(*itr, this);
         }
-        RCLCPP_INFO(this->get_logger(), "Init complete!");
         this->broadcast("state", "ready");
-
-        RCLCPP_INFO(this->get_logger(), "Init complete!");
     }
 } // namespace mwave_modules
